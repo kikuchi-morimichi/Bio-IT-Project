@@ -6,6 +6,42 @@
         <link rel="stylesheet" href="sample.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Disjoint Force-directed Graph</title>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+          }
+      
+          svg {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+          }
+      
+          .node {
+            stroke: #fff;
+            stroke-width: 1.5px;
+          }
+      
+          .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+          }
+      
+          .node circle {
+            fill: #69b3a2;
+            cursor: pointer;
+          }
+      
+          .node text {
+            font-size: 12px;
+            pointer-events: none;
+          }
+        </style>
     </head>
     <header>
         <!-- bootstrapでナビゲーションバーを作成したよ -->
@@ -37,5 +73,101 @@
             </section>
         </article>
         <footer>フッター</footer>
+        <h1>Disjoint Force-directed Graph</h1>
+        <svg id="graph"></svg>
+      
+        <script>
+          // データ設定
+          const nodes = [
+            { id: 1 },
+            { id: 2 },
+            { id: 3 },
+            { id: 4 },
+            { id: 5 },
+            { id: 6 },
+            { id: 7 },
+            { id: 8 }
+          ];
+      
+          const links = [
+            { source: 0, target: 1 },
+            { source: 0, target: 2 },
+            { source: 1, target: 3 },
+            { source: 2, target: 3 },
+            { source: 4, target: 5 },
+            { source: 4, target: 6 },
+            { source: 5, target: 7 }
+          ];
+      
+          // SVG設定
+          const width = 960;
+          const height = 600;
+      
+          const svg = d3.select("#graph")
+            .attr("width", width)
+            .attr("height", height);
+      
+          // 力学的レイアウト設定
+          const simulation = d3.forceSimulation(nodes)
+            .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("center", d3.forceCenter(width / 2, height / 2));
+      
+          // リンクの描画
+          const link = svg.append("g")
+            .selectAll(".link")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link");
+      
+          // ノードの描画
+          const node = svg.append("g")
+            .selectAll(".node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+              .on("start", dragStarted)
+              .on("drag", dragged)
+              .on("end", dragEnded));
+      
+          node.append("circle")
+            .attr("r", 10);
+      
+          node.append("text")
+            .attr("dx", 12)
+            .attr("dy", ".35em")
+            .text(d => d.id);
+      
+          // 力学シミュレーションの更新処理
+          simulation.on("tick", () => {
+            link
+              .attr("x1", d => d.source.x)
+              .attr("y1", d => d.source.y)
+              .attr("x2", d => d.target.x)
+              .attr("y2", d => d.target.y);
+      
+            node
+              .attr("transform", d => `translate(${d.x},${d.y})`);
+          });
+      
+          // ドラッグイベント
+          function dragStarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+          }
+      
+          function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+          }
+      
+          function dragEnded(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            event.subject.fx = null;
+            event.subject.fy = null;
+          }
+        </script>
     </body>
 </html>

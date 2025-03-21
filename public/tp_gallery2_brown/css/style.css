@@ -298,7 +298,7 @@ main h2 {
 	position: fixed;z-index: 101;
 	cursor: pointer;
 	left: 0px;			/*右からの配置場所指定*/
-	top: 0px;			/*上からの配置場所指定*/
+	top: 60px;			/*上からの配置場所指定*/
 	padding: 30px;		/*余白*/
 	width: 100px;		/*幅（３本バーが出ている場合の幅になります）*/
 	height: 100px;		/*高さ*/

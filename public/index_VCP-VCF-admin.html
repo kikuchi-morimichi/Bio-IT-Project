@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>VCP-VCF Administrator</title>
+  <title>VCP-VCF Administrator 2V0-11.25 2V0-11.24</title>
   <style>
     body {
       font-family: "Helvetica", sans-serif;
@@ -62,6 +62,34 @@
       background-color: #f7c5c5 !important;
     }
 
+    .source {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .source a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .source a:hover {
+      text-decoration: underline;
+    }
+
+    .memo {
+      margin-top: 10px;
+    }
+
+    .memo textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      resize: vertical;
+    }
+
     #next-btn {
       display: block;
       margin: 30px auto 0;
@@ -81,14 +109,16 @@
 </head>
 <body>
   <div class="container">
-    <h1>VCP-VCF Administrator</h1>
+    <h1>VCP-VCF Administrator 2V0-11.25, 2V0-11.24</h1>
     <div id="quiz-container"></div>
     <button id="next-btn">次の10問</button>
   </div>
 
-  <!-- JSON データ -->
-  <script type="application/json" id="questions-data">
-  [
+  <script>
+    const QUESTIONS_PER_PAGE = 10;
+    let currentPage = 0;
+
+    const questions = [
   {
     "question": "An administrator is tasked with deploying a new VMware Cloud Foundation (VCF) instance. The management domain is designed to be created with three virtual distributed switches (VDS) configured as follows:VDS1 - used for management and vMotion trafficVDS2 - used for vSAN traffic -VDS3 - used for NSX Overlay trafficWhat action would the administrator take to deploy the designed configuration?",
     "choices": {
@@ -1512,15 +1542,8 @@
     ],
     "source": "https://www.examtopics.com/discussions/vmware/view/156196-exam-2v0-1124-topic-1-question-51-discussion/"
   }
-]
-  </script>
+];
 
-  <script>
-    const QUESTIONS_PER_PAGE = 10;
-    let currentPage = 0;
-
-    const rawData = document.getElementById("questions-data").textContent;
-    const questions = JSON.parse(rawData);
     const quizContainer = document.getElementById("quiz-container");
     const nextBtn = document.getElementById("next-btn");
 
@@ -1549,7 +1572,7 @@
         choicesList.className = "choices";
 
         Object.entries(q.choices).forEach(([key, value]) => {
-          const letter = key.replace('.', ''); // "A." → "A"
+          const letter = key.replace('.', '');
           const li = document.createElement("li");
           li.innerHTML = `<strong>${key}</strong> ${value}`;
           li.dataset.choice = letter;
@@ -1564,16 +1587,29 @@
           choicesList.appendChild(li);
         });
 
-        block.appendChild(questionEl);
-        block.appendChild(choicesList);
+        // メモ欄の作成
+        const memoEl = document.createElement("div");
+        memoEl.className = "memo";
+        const textarea = document.createElement("textarea");
+        textarea.placeholder = "メモを入力してください...";
+        textarea.id = `memo_${questionNumber}`;
+        textarea.value = localStorage.getItem(textarea.id) || ""; // 復元
+        textarea.addEventListener("input", () => {
+          localStorage.setItem(textarea.id, textarea.value); // 自動保存
+        });
+        memoEl.appendChild(textarea);
 
         // 出典元リンクの追加
+        const sourceEl = document.createElement("div");
+        sourceEl.className = "source";
         if (q.source) {
-          const sourceEl = document.createElement("div");
-          sourceEl.className = "source";
           sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
-          block.appendChild(sourceEl);
         }
+
+        block.appendChild(questionEl);
+        block.appendChild(choicesList);
+        block.appendChild(memoEl);
+        block.appendChild(sourceEl);
 
         quizContainer.appendChild(block);
       });

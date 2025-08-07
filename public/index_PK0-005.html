@@ -1,0 +1,2991 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>PK0-005</title>
+  <style>
+    body {
+      font-family: "Helvetica", sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .question-block {
+      margin-bottom: 30px;
+      padding: 15px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .question-text {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .choices {
+      list-style: none;
+      padding: 0;
+    }
+
+    .choices li {
+      margin-bottom: 8px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .choices li:hover {
+      background: #d0e8ff;
+    }
+
+    .correct {
+      background-color: #c8f7c5 !important;
+    }
+
+    .incorrect {
+      background-color: #f7c5c5 !important;
+    }
+
+    .source {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .source a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .source a:hover {
+      text-decoration: underline;
+    }
+
+    .memo {
+      margin-top: 10px;
+    }
+
+    .memo textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    #next-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #next-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PK0-005</h1>
+    <div id="quiz-container"></div>
+    <button id="next-btn">次の10問</button>
+  </div>
+
+  <script>
+    const QUESTIONS_PER_PAGE = 10;
+    let currentPage = 0;
+
+    const questions = [
+  {
+    "question": "During the planning phase, a team agreed on the tasks, durations, predecessors, and resources needed to complete a project. Which of the following should be developed to formalize this agreement?",
+    "choices": {
+      "A.": "Baseline",
+      "B.": "RBS",
+      "C.": "WBS",
+      "D.": "Milestones"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156966-exam-pk0-005-topic-1-question-252-discussion/"
+  },
+  {
+    "question": "After new capabilities were deployed in a system, issues with preexisting capabilities were reported. Which of the following testing cycles should be used to prevent this issue?",
+    "choices": {
+      "A.": "Performance testing",
+      "B.": "User acceptance testing",
+      "C.": "Stress testing",
+      "D.": "Unit testing"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303229-exam-pk0-005-topic-1-question-217-discussion/"
+  },
+  {
+    "question": "Which of the following can a project manager infer from the following velocity chart?",
+    "choices": {
+      "A.": "The project is on schedule.",
+      "B.": "The project is ahead of schedule.",
+      "C.": "The project is behind schedule.",
+      "D.": "The project is at risk."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/155298-exam-pk0-005-topic-1-question-204-discussion/"
+  },
+  {
+    "question": "Because the project team lacks hands-on experience, the project manager has decided to involve a third-party vendor to complete the development of a product. Which of the following documents should the project manager expedite FIRST?",
+    "choices": {
+      "A.": "RFI",
+      "B.": "RFP",
+      "C.": "RFQ",
+      "D.": "RFB"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140812-exam-pk0-005-topic-1-question-197-discussion/"
+  },
+  {
+    "question": "A project manager is eager to define access requirements during the initiation phase of a project. Which of the following steps should the project manager perform FIRST?",
+    "choices": {
+      "A.": "Define the WBS.",
+      "B.": "Develop a RAM.",
+      "C.": "Manage the vendors.",
+      "D.": "Assess the resource pool."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142173-exam-pk0-005-topic-1-question-182-discussion/"
+  },
+  {
+    "question": "Given the following velocity chart:Which of the following updates on the project status should the Scrum master provide to the senior management team?",
+    "choices": {
+      "A.": "The project utilized all of its available reserve.",
+      "B.": "The project has scope creep.",
+      "C.": "The project deviated from the critical path.",
+      "D.": "The project is trending ahead of schedule."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140913-exam-pk0-005-topic-1-question-163-discussion/"
+  },
+  {
+    "question": "During the execution of a project, a project manager wanted to discover how the number of worked hours was affecting the quality of given tasks. For a two-month period, the following data was documented:Which of the following describes the result?",
+    "choices": {
+      "A.": "A negative correlation exists between the number of mistakes and the working hours.",
+      "B.": "No correlation exists between the number of mistakes and the working hours.",
+      "C.": "A low correlation exists between the working hours and the number of mistakes.",
+      "D.": "A positive correlation exists between the number of mistakes and the working hours."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303870-exam-pk0-005-topic-1-question-300-discussion/"
+  },
+  {
+    "question": "During the execution phase of a project, the project team faced an unexpected website downtime. The project manager held a brainstorming session, and the team identified causes and effects for the problem. Now the project team needs to analyze and determine whether the particular cause and effect are related by using one of the following charts. Which of the following should the team use?",
+    "choices": {
+      "A.": "",
+      "B.": "",
+      "C.": "",
+      "D.": ""
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304801-exam-pk0-005-topic-1-question-281-discussion/"
+  },
+  {
+    "question": "Two stakeholders, who have a history of animosity toward one another, are in disagreement during a project. The project’s timeline depends on the stakeholders accomplishing their tasks. Which of the following conflict resolution methods would be best to utilize?",
+    "choices": {
+      "A.": "Smoothing",
+      "B.": "Confronting",
+      "C.": "Forcing",
+      "D.": "Compromising"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/157015-exam-pk0-005-topic-1-question-276-discussion/"
+  },
+  {
+    "question": "A project manager notices a resource is overloaded and not completing tasks on time. After reviewing the Gantt chart, the project manager notices the resource has multiple simultaneous tasks that could be executed independently. Which of the following should the project manager do next?",
+    "choices": {
+      "A.": "Change the precedence of the tasks to “finish-to-start”.",
+      "B.": "Evaluate and modify the schedule with a burndown chart.",
+      "C.": "Assign additional resources to prevent overwork.",
+      "D.": "Perform critical path analysis."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/308221-exam-pk0-005-topic-1-question-267-discussion/"
+  },
+  {
+    "question": "While defining technical requirements, the development team requested a tiered architecture setup. Which of the following types of environments BEST describes this architecture?",
+    "choices": {
+      "A.": "Security environment",
+      "B.": "Network environment",
+      "C.": "Release environment",
+      "D.": "Stage environment"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120416-exam-pk0-005-topic-1-question-137-discussion/"
+  },
+  {
+    "question": "A project team has identified a bug during user acceptance testing. Which of the following is the BEST method for communicating that bug to the development team?",
+    "choices": {
+      "A.": "Call the development lead to discuss the fixes for the bug.",
+      "B.": "Include the bug issue as part of the status update for stakeholders.",
+      "C.": "Issue a change request.",
+      "D.": "Add the bug issue to the project's risk register."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119501-exam-pk0-005-topic-1-question-114-discussion/"
+  },
+  {
+    "question": "After determining the appropriate maintenance window, which of the following should occur NEXT in the operational infrastructure change process?",
+    "choices": {
+      "A.": "Implement the change.",
+      "B.": "Approve the test plan.",
+      "C.": "Notify customers.",
+      "D.": "Develop a rollback plan."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107527-exam-pk0-005-topic-1-question-48-discussion/"
+  },
+  {
+    "question": "Project A is running behind schedule. The team realizes that Project B is working on an API that was planned to be developed by Project A. The project manager from Project A decides to use the API from Project B. Which of the following risk management strategies describes this example?",
+    "choices": {
+      "A.": "Exploit",
+      "B.": "Share",
+      "C.": "Transfer",
+      "D.": "Accept"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/155837-exam-pk0-005-topic-1-question-302-discussion/"
+  },
+  {
+    "question": "A PM is evaluating whether an IaaS contract needs to be extended. When reviewing the system usage report, the PM realizes that usage is at 20% capacity. Which of the following actions should the PM take?",
+    "choices": {
+      "A.": "Continue to monitor the system performance.",
+      "B.": "Resize the resource utilization to reflect current needs.",
+      "C.": "Reinforce adoption over time.",
+      "D.": "Raise an item in the issue log."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/128656-exam-pk0-005-topic-1-question-88-discussion/"
+  },
+  {
+    "question": "A project manager has decided to make a scope change in the SOW. Which of the following should the project manager do first in the process?",
+    "choices": {
+      "A.": "Discuss with a team lead.",
+      "B.": "Move to the next step in the process.",
+      "C.": "Communicate with the project sponsor.",
+      "D.": "Have a meeting with the human resources department."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304459-exam-pk0-005-topic-1-question-325-discussion/"
+  },
+  {
+    "question": "In a functional organizational structure, a project manager is trying to avoid a project roadblock due to a mobilization fee that has not been paid to a contractor. Which of the following should the project manager do?",
+    "choices": {
+      "A.": "Authorize payment from the contingency budget.",
+      "B.": "Follow up on the payment request with the payable clerk.",
+      "C.": "Negotiate with the contractor to be paid later in the project.",
+      "D.": "Escalate the issue to the financial controller."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304456-exam-pk0-005-topic-1-question-321-discussion/"
+  },
+  {
+    "question": "Which of the following should a product manager choose in order to enable collaboration between team members located in different regions? (Choose two.)",
+    "choices": {
+      "A.": "Real-time surveys/polling",
+      "B.": "Wiki knowledge base",
+      "C.": "Spreadsheets",
+      "D.": "Meetings/face-to-face",
+      "E.": "Real-time, multiauthoring editing software",
+      "F.": "Charting/diagramming."
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304455-exam-pk0-005-topic-1-question-320-discussion/"
+  },
+  {
+    "question": "A project team wants to compare two potential vendors’ costs and risks for completing project tasks. Which of the following visualizations will best facilitate this analysis?",
+    "choices": {
+      "A.": "Scatter diagram",
+      "B.": "Decision tree",
+      "C.": "Pareto chart",
+      "D.": "Histogram"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/305661-exam-pk0-005-topic-1-question-222-discussion/"
+  },
+  {
+    "question": "As a part of a project, structured cabling activities have been outsourced to another company. The agreement is that work will take six weeks to complete and will be performed at different locations. Which of the following should the project manager do? (Choose two.)",
+    "choices": {
+      "A.": "Purchase the materials.",
+      "B.": "Assign the resources.",
+      "C.": "Accept delays in the work.",
+      "D.": "Approve the deliverables.",
+      "E.": "Monitor the performance.",
+      "F.": "Negotiate with the vendors."
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/302421-exam-pk0-005-topic-1-question-170-discussion/"
+  },
+  {
+    "question": "A project is planned to be completed in three phases. The team has learned that all the tasks related to phase one are a week behind schedule. Which of the following is the next action the project manager should take?",
+    "choices": {
+      "A.": "Update the project schedule.",
+      "B.": "Start the other phases in parallel to accelerate the project.",
+      "C.": "Assign additional resources to finish incomplete tasks.",
+      "D.": "Abandon phase one and begin phase two as planned."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304024-exam-pk0-005-topic-1-question-294-discussion/"
+  },
+  {
+    "question": "Which of the following factors would be impacted the most by requirements for a project to implement an air quality control system at a coal plant?",
+    "choices": {
+      "A.": "Social",
+      "B.": "Regulatory",
+      "C.": "Environmental",
+      "D.": "Governmental"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304023-exam-pk0-005-topic-1-question-283-discussion/"
+  },
+  {
+    "question": "Which of the following is an activity related to operational security?",
+    "choices": {
+      "A.": "Processing background screening",
+      "B.": "Setting up a firewall",
+      "C.": "Establishing a zone of trust",
+      "D.": "Implementing multifactor authentication"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303174-exam-pk0-005-topic-1-question-264-discussion/"
+  },
+  {
+    "question": "Which of the following describes three-tier architecture?",
+    "choices": {
+      "A.": "Conceptual, design, and implementation stages",
+      "B.": "Presentation, application, and data processing",
+      "C.": "Network, software, and security",
+      "D.": "Development, testing, and production environment"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107342-exam-pk0-005-topic-1-question-47-discussion/"
+  },
+  {
+    "question": "Several stakeholders have asked about how the requirements are being covered by the deliverables and the progress of each requirement. Which of the following would be the best tool the project manager can use to provide this information to the stakeholders?",
+    "choices": {
+      "A.": "Risk register",
+      "B.": "Change log",
+      "C.": "Traceability matrix",
+      "D.": "Project status report"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/302459-exam-pk0-005-topic-1-question-233-discussion/"
+  },
+  {
+    "question": "A project is executed to migrate all data to a single system following the merger of two companies. The team validates that system performance will not be impacted. Which of the following did the team perform?",
+    "choices": {
+      "A.": "Regression testing",
+      "B.": "Smoke testing",
+      "C.": "Stress testing",
+      "D.": "Automation testing"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142775-exam-pk0-005-topic-1-question-203-discussion/"
+  },
+  {
+    "question": "Testing has been completed, and the new system is loaded in production and ready to be activated. Which of the following needs approval from the project sponsor?",
+    "choices": {
+      "A.": "Project charter",
+      "B.": "Deployment plan",
+      "C.": "Business case",
+      "D.": "Release schedule"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110605-exam-pk0-005-topic-1-question-132-discussion/"
+  },
+  {
+    "question": "Two developers are discussing the design solution for a particular feature. The meeting is taking longer than expected, and the parties have been unable to reach an agreement. The project manager decides to take a break and continue the meeting on another day. Which of the following techniques is the project manager using?",
+    "choices": {
+      "A.": "Avoiding",
+      "B.": "Smoothing",
+      "C.": "Forcing",
+      "D.": "Compromising"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304656-exam-pk0-005-topic-1-question-158-discussion/"
+  },
+  {
+    "question": "Which of the following best describes the meaning of “awareness to the local and global environment” in regards to project management?",
+    "choices": {
+      "A.": "Being aware of the political climate locally and in the country where the project is taking place",
+      "B.": "Being aware of the impact of the project on domestic and international ecosystems",
+      "C.": "Being aware of the weather patterns and natural disasters in the area",
+      "D.": "Being aware of the conflicting cultural norms and traditions between the local community and where the project is being executed"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303355-exam-pk0-005-topic-1-question-327-discussion/"
+  },
+  {
+    "question": "A company asks some vendors to provide a solution for its specific needs. Which of the following documents should the company provide?",
+    "choices": {
+      "A.": "RFP",
+      "B.": "RFQ",
+      "C.": "RFB",
+      "D.": "RFI"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303352-exam-pk0-005-topic-1-question-312-discussion/"
+  },
+  {
+    "question": "During a brainstorming session, a team member expressed concerns that solar flares could cause intermittent outages for those individuals working on the project. Which of the following would be the best tool to communicate this information to stakeholders?",
+    "choices": {
+      "A.": "Status report",
+      "B.": "Issue log",
+      "C.": "Risk report",
+      "D.": "Risk register"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/297794-exam-pk0-005-topic-1-question-297-discussion/"
+  },
+  {
+    "question": "Which of the following best represents the project impact to a company’s brand value?",
+    "choices": {
+      "A.": "The project is compliant with local and state laws and becomes the standard for new projects.",
+      "B.": "The project promotes new initiatives to expand its benefit to other communities.",
+      "C.": "The project exceeds the sales quota for the third quarter and raises the bar for next periods.",
+      "D.": "The project meets the expected milestones and finishes on time and within budget."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304046-exam-pk0-005-topic-1-question-293-discussion/"
+  },
+  {
+    "question": "After returning from a vacation, a project manager learns the company’s new administration released a memo communicating plans to reduce costs in projects. Which of the following should the project manager do first?",
+    "choices": {
+      "A.": "Transfer the projects to an external consulting firm to prevent their failure.",
+      "B.": "Wait for the new administration to express opinions about the projects.",
+      "C.": "Resign and leave the projects, as there will be no chance to finish them.",
+      "D.": "Present the projects that are underway and describe their relevance to the organization."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304460-exam-pk0-005-topic-1-question-326-discussion/"
+  },
+  {
+    "question": "During project execution, the team had to execute the risk mitigation plan for a given deliverable, which had an unplanned financial impact. Which of the following should the project manager do next?",
+    "choices": {
+      "A.": "Coordinate a phase gate review.",
+      "B.": "Update the project budget.",
+      "C.": "Conduct project meetings and updates.",
+      "D.": "Monitor the vendor’s performance."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304458-exam-pk0-005-topic-1-question-324-discussion/"
+  },
+  {
+    "question": "A project manager wants to be confident that the most crucial functions of a new software build work and that the software is ready for the next testing phase. Which of the following types of testing should be done?",
+    "choices": {
+      "A.": "Performance",
+      "B.": "Smoke",
+      "C.": "Regression",
+      "D.": "Unit"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304457-exam-pk0-005-topic-1-question-323-discussion/"
+  },
+  {
+    "question": "Which of the following best explains the importance of artifacts during the discovery/concept preparation phase of a project?",
+    "choices": {
+      "A.": "To develop a detailed project plan and timeline",
+      "B.": "To enable a lessons learned session",
+      "C.": "To identify and assess potential vendors for the project",
+      "D.": "To ensure that all stakeholders have a shared understanding of the project’s objectives"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304438-exam-pk0-005-topic-1-question-257-discussion/"
+  },
+  {
+    "question": "As a result of an approved change request, the project manager updates the project plan to reflect the new feature addition and the revised production release date. Which of the following change control processes should the project manager do NEXT?",
+    "choices": {
+      "A.": "Validate the change implementation.",
+      "B.": "Implement the change.",
+      "C.": "Conduct an impact assessment.",
+      "D.": "Communicate the change deployment."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110506-exam-pk0-005-topic-1-question-107-discussion/"
+  },
+  {
+    "question": "A PM wants to add a chart to the monthly status report to show major accomplishments for key events. Which of the following is the BEST chart to use?",
+    "choices": {
+      "A.": "Milestone",
+      "B.": "Gantt",
+      "C.": "Burndown",
+      "D.": "PERT"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/302420-exam-pk0-005-topic-1-question-169-discussion/"
+  },
+  {
+    "question": "After a release, the project sponsor received an escalation from an executive about the extension of the downtime after the scheduled window. Which of the following should be added to the issue log?",
+    "choices": {
+      "A.": "Continuous integration",
+      "B.": "Rollback plan",
+      "C.": "Customer notification",
+      "D.": "Automated testing"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107478-exam-pk0-005-topic-1-question-35-discussion/"
+  },
+  {
+    "question": "A project manager realizes that a project will not be completed on time due to resource constraints. Which of the following actions should the project manager take NEXT?",
+    "choices": {
+      "A.": "Trigger the contingency plan and communicate with the stakeholders.",
+      "B.": "Work with the functional managers to create a work-around.",
+      "C.": "Submit a change request to the change control board.",
+      "D.": "Transfer the risk by hiring a new vendor who was successful on a previous project.",
+      "E.": "Set up an escalation meeting with the sponsor."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107465-exam-pk0-005-topic-1-question-10-discussion/"
+  },
+  {
+    "question": "A project manager decided to host the development environment on a cloud service. Which of the following would the project manager most likely use for this purpose?",
+    "choices": {
+      "A.": "IaaS",
+      "B.": "XaaS",
+      "C.": "DaaS",
+      "D.": "SaaS"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304136-exam-pk0-005-topic-1-question-309-discussion/"
+  },
+  {
+    "question": "A PM has gathered stakeholders from across various functions in the organization. The team has never worked together before. Which of the following should the PM do to ensure standards are understood?",
+    "choices": {
+      "A.": "Conduct team training.",
+      "B.": "Present the scope statement.",
+      "C.": "Establish meeting schedules.",
+      "D.": "Develop a communication plan."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119480-exam-pk0-005-topic-1-question-90-discussion/"
+  },
+  {
+    "question": "Project team members are leaving the company due to a stressful work environment. The project manager needs to capture this concern about potentially losing team members again. Which of the following logs should the project manager use?",
+    "choices": {
+      "A.": "Risk",
+      "B.": "Change",
+      "C.": "Defect",
+      "D.": "Issue"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304088-exam-pk0-005-topic-1-question-245-discussion/"
+  },
+  {
+    "question": "A PM is working to establish accepted communication channels and to define access requirements. In which of the following phases is the project?",
+    "choices": {
+      "A.": "Discovery",
+      "B.": "Execution",
+      "C.": "Initiating",
+      "D.": "Planning"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156879-exam-pk0-005-topic-1-question-282-discussion/"
+  },
+  {
+    "question": "A demo presentation for a global project was not as successful as expected because the development team misinterpreted which features needed to be incorporated. Which of the following has the project manager identified?",
+    "choices": {
+      "A.": "Technological factors",
+      "B.": "Poor sample data",
+      "C.": "Language barriers",
+      "D.": "Scope creep"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/295856-exam-pk0-005-topic-1-question-266-discussion/"
+  },
+  {
+    "question": "A project team has implemented a new system and needs to ensure it is usable. Which of the following should be performed first?",
+    "choices": {
+      "A.": "Provide end-user training.",
+      "B.": "Decommission old systems.",
+      "C.": "Release external consultants.",
+      "D.": "Monitor performance."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/304000-exam-pk0-005-topic-1-question-238-discussion/"
+  },
+  {
+    "question": "A project manager identifies stakeholders who will be impacted when a new product is delivered to the company. The project manager notices that more stakeholders will be positively impacted than negatively impacted. Which of the following actions should the project manager take?",
+    "choices": {
+      "A.": "List both positively and negatively impacted stakeholders.",
+      "B.": "Update the communication plan with the new findings.",
+      "C.": "List the negatively impacted stakeholders only.",
+      "D.": "List the positively impacted stakeholders only."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303998-exam-pk0-005-topic-1-question-208-discussion/"
+  },
+  {
+    "question": "During the testing process, testers have found multiple bugs that could jeopardize the project commitment date. Which of the following tools should the project manager use first to update the findings?",
+    "choices": {
+      "A.": "Defect log",
+      "B.": "Change log",
+      "C.": "Issue log",
+      "D.": "Risk log"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/155943-exam-pk0-005-topic-1-question-209-discussion/"
+  },
+  {
+    "question": "A project manager is working with a new team to review a requirement for a new project. The project manager wants to create artifacts that include roles and responsibilities. Which of the following artifact types best matches these requirements?",
+    "choices": {
+      "A.": "RACI chart",
+      "B.": "Gantt chart",
+      "C.": "Burndown chart",
+      "D.": "Organizational chart"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303354-exam-pk0-005-topic-1-question-322-discussion/"
+  },
+  {
+    "question": "Because milestones were not being met, a project manager decided to add more developers to the crucial tasks to help expedite the completion of deliverables. However, the developers’ performance did not improve. Which of the following team life cycles should the project manager move to next?",
+    "choices": {
+      "A.": "Forming",
+      "B.": "Norming",
+      "C.": "Storming",
+      "D.": "Adjourning"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/303353-exam-pk0-005-topic-1-question-319-discussion/"
+  },
+  {
+    "question": "A project team member recalls a specific chat with another member that contained key information related to a previous project, which no one else on the project team is aware of. Which of the following best describes what was needed to address this concern?",
+    "choices": {
+      "A.": "Integrity",
+      "B.": "Security",
+      "C.": "Archival",
+      "D.": "Lessons learned"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156993-exam-pk0-005-topic-1-question-311-discussion/"
+  },
+  {
+    "question": "A company is creating a new technology. The company is concerned that the project details could be compromised if a cloud service is used, and another company could launch the technology before the current projected delivery. Which of the following can the company do to minimize this risk?",
+    "choices": {
+      "A.": "Use an on-premises project management scheduling tool.",
+      "B.": "Limit access to members of the project team.",
+      "C.": "Mandate overtime to get the project completed sooner.",
+      "D.": "Ensure all team members have signed a non-disclosure agreement."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156988-exam-pk0-005-topic-1-question-229-discussion/"
+  },
+  {
+    "question": "A PM is working on the schedule for a project that has technical tasks and requires a SME's knowledge. The PM decides the best way to track this project is to have the project lead provide high-level updates. Which of the following is the BEST tool to track this data?",
+    "choices": {
+      "A.": "Gantt chart",
+      "B.": "Project organization chart",
+      "C.": "Program Evaluation Review Technique chart",
+      "D.": "Milestone chart"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142174-exam-pk0-005-topic-1-question-205-discussion/"
+  },
+  {
+    "question": "Which of the following tools is BEST to use for storing lessons learned?",
+    "choices": {
+      "A.": "Whiteboard",
+      "B.": "Wiki knowledge base",
+      "C.": "Content management system",
+      "D.": "Workflow platform"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156947-exam-pk0-005-topic-1-question-173-discussion/"
+  },
+  {
+    "question": "A lessons-learned meeting took more than two hours and ended without defining a standardized process. The project manager decides to move forward without allowing changes to the existing process. Which of the following techniques is the project manager using?",
+    "choices": {
+      "A.": "Forcing",
+      "B.": "Avoiding",
+      "C.": "Compromising",
+      "D.": "Smoothing"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/302457-exam-pk0-005-topic-1-question-225-discussion/"
+  },
+  {
+    "question": "As a result of an approved change, the project manager updates the project plan with the newest project end date. Which of the following change control processes should the project manager complete next?",
+    "choices": {
+      "A.": "Document the request in the change control log.",
+      "B.": "Perform a Monte Carlo simulation.",
+      "C.": "Conduct an impact assessment.",
+      "D.": "Implement the change."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/154314-exam-pk0-005-topic-1-question-284-discussion/"
+  },
+  {
+    "question": "A system was implemented, and testing was successfully completed. Which of the following should the project manager do NEXT?",
+    "choices": {
+      "A.": "Validate against the scope statement and ask for sign-off.",
+      "B.": "Run a control chart to ensure the quality of the deliverables.",
+      "C.": "Review the risk register and close up residual risks.",
+      "D.": "Start the training and handoff for the operations team."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107520-exam-pk0-005-topic-1-question-80-discussion/"
+  },
+  {
+    "question": "Which of the following would be the NEXT document a project manager should update once the need to procure goods and/or services is identified?",
+    "choices": {
+      "A.": "Memorandum of understanding",
+      "B.": "Request for information",
+      "C.": "Statement of work",
+      "D.": "Non-disclosure agreement"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/108705-exam-pk0-005-topic-1-question-60-discussion/"
+  },
+  {
+    "question": "While developing a project charter, a PM discovers that some of the legal requirements have not been addressed during the project concept preparation, which could result in significant financial penalties against the organization. The PM knows that implementation of appropriate changes is costly and will exceed the budget and scope of the project. Which of the following should the PM do FIRST?",
+    "choices": {
+      "A.": "Escalate the finding to the change control board.",
+      "B.": "Add a risk to the risk register for validation.",
+      "C.": "Consult the RACI matrix to identify ownership of the risk.",
+      "D.": "Have a meeting with the project sponsor and main stakeholders."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137131-exam-pk0-005-topic-1-question-26-discussion/"
+  },
+  {
+    "question": "Which of the following tools should a project manager use to assess the activities performed, work effort applied, and the productivity of a project?",
+    "choices": {
+      "A.": "Project status report",
+      "B.": "Project evaluation review",
+      "C.": "Project management software",
+      "D.": "Requirements traceability matrix"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/170080-exam-pk0-005-topic-1-question-278-discussion/"
+  },
+  {
+    "question": "Someone claiming to be from a tax agency sent an email to a team member asking for access to the project repository. Which of the following BEST describes this scenario?",
+    "choices": {
+      "A.": "Social engineering",
+      "B.": "Phishing",
+      "C.": "Spoofing",
+      "D.": "Hacking"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/133976-exam-pk0-005-topic-1-question-32-discussion/"
+  },
+  {
+    "question": "A project sponsor is notified that the committed turnaround time has been exceeded. The team member assigned to this item stated that the support of the management team was requested on time. Which of the following documents should be reviewed to understand the root cause of this situation?",
+    "choices": {
+      "A.": "RACI",
+      "B.": "SOW",
+      "C.": "Escalation path",
+      "D.": "Communication plan"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/111012-exam-pk0-005-topic-1-question-133-discussion/"
+  },
+  {
+    "question": "A project coordinator has started a new project and is reviewing the following characteristics provided by the customer:•\tTwo developers•\tHigh uncertainty about existing systems•\tRisk of frequent requirement changes•\tTight deadlinesWhich of the following project methodologies would be BEST to use in this situation?",
+    "choices": {
+      "A.": "PRINCE2",
+      "B.": "Scrum",
+      "C.": "SAFe",
+      "D.": "XP"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/153691-exam-pk0-005-topic-1-question-195-discussion/"
+  },
+  {
+    "question": "Several stakeholders have declined the invitation for the kickoff of a major digital transformation project. Which of the following actions should the project manager take NEXT?",
+    "choices": {
+      "A.": "Escalate directly to the project sponsor.",
+      "B.": "Push the kickoff meeting out by one week.",
+      "C.": "Proceed with the kickoff as planned.",
+      "D.": "Identify replacements for project stakeholders."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142232-exam-pk0-005-topic-1-question-144-discussion/"
+  },
+  {
+    "question": "The project kickoff concluded, and the sponsor indicated that the recently hired summer interns are authorized to work on the project. Which of the following should the project manager do NEXT?",
+    "choices": {
+      "A.": "Host a risk workshop with all stakeholders to complete an initial risk assessment.",
+      "B.": "Work with the interns to develop a work breakdown structure and project schedule.",
+      "C.": "Conduct a skills assessment to determine the strengths and weaknesses of the staff.",
+      "D.": "Assign the resources to project tasks and encourage them to begin work immediately."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110607-exam-pk0-005-topic-1-question-135-discussion/"
+  },
+  {
+    "question": "A stakeholder notices a typo in the project management plan, specifically the word manager was spelled “manger”. Which of the following is the decision maker who can authorize the change so the correction can be made?",
+    "choices": {
+      "A.": "PM",
+      "B.": "CCB",
+      "C.": "Sponsor",
+      "D.": "Business analyst"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110604-exam-pk0-005-topic-1-question-126-discussion/"
+  },
+  {
+    "question": "Due to multiple changes, the sign-off for the project scope baseline is delayed. The project sponsor has restricted the budget for this project. Which of the following should the project manager MOST likely do to move forward?",
+    "choices": {
+      "A.": "Communicate with the affected stakeholders.",
+      "B.": "Initiate a formal change request to modify the cost.",
+      "C.": "Adjust the scope to stay within the cost.",
+      "D.": "Set a new cost using a lightweight estimation method."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/108516-exam-pk0-005-topic-1-question-36-discussion/"
+  },
+  {
+    "question": "A company wants to move its data from on premises to off premises. Which of the following cloud models should be pursued?",
+    "choices": {
+      "A.": "XaaS",
+      "B.": "SaaS",
+      "C.": "PaaS",
+      "D.": "IaaS"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156812-exam-pk0-005-topic-1-question-199-discussion/"
+  },
+  {
+    "question": "A PM is meeting with the project team to identify the baseline go-live date, the operational training, and the handoff procedures. Which of the following phases is the project team performing?",
+    "choices": {
+      "A.": "Initiation",
+      "B.": "Closing",
+      "C.": "Execution",
+      "D.": "Planning"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156804-exam-pk0-005-topic-1-question-189-discussion/"
+  },
+  {
+    "question": "A few weeks before a project is scheduled to be completed, the client asks to add a new feature to the product that is being developed. The project manager analyzes the project schedule and determines the feature can be implemented quite easily without affecting the completion date. Which of the following should the project manager do FIRST?",
+    "choices": {
+      "A.": "Escalate the change to the CCB.",
+      "B.": "Review the requested change.",
+      "C.": "Document the change recommendations.",
+      "D.": "Validate the implementation of the requested change."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156802-exam-pk0-005-topic-1-question-183-discussion/"
+  },
+  {
+    "question": "A project is running over budget, and due to new legislation in the country, the company needs to release all its contractors on the project or hire them as full-time employees. Which of the following should the PM do NEXT to comply with the new legislation?",
+    "choices": {
+      "A.": "Use only full-time employees even if the project is delayed.",
+      "B.": "Hire all team members to avoid any delay in the project.",
+      "C.": "Close the contract and pay the contractors cash for the remainder of the project.",
+      "D.": "Look for an overseas vendor to finalize the project work."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/144425-exam-pk0-005-topic-1-question-165-discussion/"
+  },
+  {
+    "question": "Which of the following would be considered operational security?",
+    "choices": {
+      "A.": "Mobile device compliance",
+      "B.": "Background screening",
+      "C.": "Multifactor authentication",
+      "D.": "Facility access"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140914-exam-pk0-005-topic-1-question-161-discussion/"
+  },
+  {
+    "question": "A team is analyzing the backlog in order to decide what to include in the next sprint. Which of the following aspects is the MOST important for the team to take into consideration?",
+    "choices": {
+      "A.": "Time to be fixed",
+      "B.": "Impact to project",
+      "C.": "Issue category",
+      "D.": "Resource availability"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/156792-exam-pk0-005-topic-1-question-155-discussion/"
+  },
+  {
+    "question": "To gather requirements from stakeholders, the project manager sits down with them and allows them to discuss freely. Which of following techniques is the project manager utilizing?",
+    "choices": {
+      "A.": "Process modeling",
+      "B.": "Brainstorming",
+      "C.": "Interview",
+      "D.": "Focus group"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/150925-exam-pk0-005-topic-1-question-142-discussion/"
+  },
+  {
+    "question": "A hurricane delays the shipment of critical equipment for a project. Which of the following is BEST to use to document the effects of this delay?",
+    "choices": {
+      "A.": "Issue log",
+      "B.": "Gantt chart",
+      "C.": "Milestone chart",
+      "D.": "Change control log"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107413-exam-pk0-005-topic-1-question-19-discussion/"
+  },
+  {
+    "question": "A PM received feedback from the project sponsor that the resources involved in the project are unsure of their daily activities. Which of the following is the MOST effective step for the PM to take to ensure clarity within the team?",
+    "choices": {
+      "A.": "Create a list of tasks and share it with the team.",
+      "B.": "Resend the scope of work to the team.",
+      "C.": "Review the Gantt chart weekly with the team.",
+      "D.": "Have the project sponsor meet with the team."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/113816-exam-pk0-005-topic-1-question-61-discussion/"
+  },
+  {
+    "question": "Which of the following software programs would be BEST to use to store information related to business transactions?",
+    "choices": {
+      "A.": "Record management system",
+      "B.": "Customer relationship management",
+      "C.": "Enterprise resource planning",
+      "D.": "Content management system"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119841-exam-pk0-005-topic-1-question-58-discussion/"
+  },
+  {
+    "question": "While managing a project, a PM is assigned to work on a second project. The second project becomes more complex and monopolizes the PM’s time. The PM learns that a similarly time-consuming project was executed previously in the organization. Which of the following actions should the PM take?",
+    "choices": {
+      "A.": "Perform a root cause analysis.",
+      "B.": "Organize a stakeholder meeting.",
+      "C.": "Escalate the issue to the CCB.",
+      "D.": "Contact the PMO for assistance."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137142-exam-pk0-005-topic-1-question-55-discussion/"
+  },
+  {
+    "question": "During a brainstorming session, a project team is elaborating on what caused the unexpected crash of the website that the team was developing. Given the following:Which of the following was the initial cause of the issue?",
+    "choices": {
+      "A.": "Inadequate memory",
+      "B.": "Incorrect configuration",
+      "C.": "Lack of infrastructure",
+      "D.": "Inadequate instructions"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/114601-exam-pk0-005-topic-1-question-46-discussion/"
+  },
+  {
+    "question": "Which of the following is a quality assurance tool?",
+    "choices": {
+      "A.": "Defining project goals",
+      "B.": "Identifying the root cause analysis",
+      "C.": "Assessing employee efficiency",
+      "D.": "Assessing skill gaps"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107369-exam-pk0-005-topic-1-question-29-discussion/"
+  },
+  {
+    "question": "Which of the following activities would a project manager perform during the closing phase? (Choose three.)",
+    "choices": {
+      "A.": "Lessons learned",
+      "B.": "Risk analysis",
+      "C.": "Removing resources",
+      "D.": "Acquiring resources",
+      "E.": "Statement of work sign-off",
+      "F.": "Stakeholder analysis",
+      "G.": "Removing access"
+    },
+    "answer": [
+      "A",
+      "C",
+      "G"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107319-exam-pk0-005-topic-1-question-28-discussion/"
+  },
+  {
+    "question": "In a functional organization, a project has been completed successfully. Which of the following actions would the project manager MOST likely perform?",
+    "choices": {
+      "A.": "Assemble a new project with existing resources.",
+      "B.": "Obtain the final report from release management.",
+      "C.": "Notify the functional manager that resources are released.",
+      "D.": "Allocate resources in a different project."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107490-exam-pk0-005-topic-1-question-23-discussion/"
+  },
+  {
+    "question": "During the stabilization phase for recently deployed software, an end user reports a bug that is compromising data integrity. Which of the following tools will the project manager MOST likely use?",
+    "choices": {
+      "A.": "Issue log",
+      "B.": "Defect log",
+      "C.": "Change log",
+      "D.": "Task board"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107409-exam-pk0-005-topic-1-question-15-discussion/"
+  },
+  {
+    "question": "As a result of an approved change, the project manager updates the project plan with the newest project end date. Which of the following change control processes should the project manager complete NEXT?",
+    "choices": {
+      "A.": "Document the request in the change control log.",
+      "B.": "Communicate the change deployment.",
+      "C.": "Conduct an impact assessment.",
+      "D.": "Implement the change."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107370-exam-pk0-005-topic-1-question-37-discussion/"
+  },
+  {
+    "question": "A project manager is performing planning tasks for a complex project at a small company. Which of the following items would be of GREATEST importance during planning?",
+    "choices": {
+      "A.": "Defining the project objectives, scope, and success criteria",
+      "B.": "Assessing the resources available for operational support after project implementation",
+      "C.": "Providing updates and status reports to the project owner and stakeholders",
+      "D.": "Developing a records management plan and reviewing existing project artifacts"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119597-exam-pk0-005-topic-1-question-141-discussion/"
+  },
+  {
+    "question": "By developing a project schedule, a PM has already validated the constraints, outlined the duration of the tasks and the phases, and confirmed the proper sequence and flow of the project. Which of the following activities still needs to be performed to complete the schedule?",
+    "choices": {
+      "A.": "Allocate resources.",
+      "B.": "Determine the project budget.",
+      "C.": "Develop a communication plan.",
+      "D.": "Establish baselines."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107365-exam-pk0-005-topic-1-question-11-discussion/"
+  },
+  {
+    "question": "A project team is working on a document to precisely describe the success criteria that should be fulfilled by a product. Which of the following documents is the team preparing?",
+    "choices": {
+      "A.": "Project scope",
+      "B.": "Quality plan",
+      "C.": "Contract obligations",
+      "D.": "Work breakdown structure"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142315-exam-pk0-005-topic-1-question-159-discussion/"
+  },
+  {
+    "question": "During a demonstration, the product owner asked the team to add new scope to the backlog. Which of the following should the Scrum master do NEXT?",
+    "choices": {
+      "A.": "Create a change request for the change advisory board.",
+      "B.": "Work with the business analyst to document the new epic.",
+      "C.": "Reject the change to prevent scope creep.",
+      "D.": "Update the risk register and the work in the mitigation plan."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120355-exam-pk0-005-topic-1-question-101-discussion/"
+  },
+  {
+    "question": "During a code implementation, a senior developer and junior tester are discussing the testing scenarios that were performed. A major malfunction resulted in an inoperative product condition. As a result, the team was forced to work until midnight to restore operations. Which of the following should the PM have generated FIRST to alleviate the impact of this issue prior to deployment?",
+    "choices": {
+      "A.": "A risk budget",
+      "B.": "A risk impact",
+      "C.": "A change request",
+      "D.": "A contingency plan"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120270-exam-pk0-005-topic-1-question-75-discussion/"
+  },
+  {
+    "question": "A key stakeholder recommends to a senior developer that a new feature be added. The new feature is not part of the current requirement documentation. Which of the following is MOST likely happening?",
+    "choices": {
+      "A.": "Scope creep",
+      "B.": "Collecting requirements",
+      "C.": "Decision-making",
+      "D.": "Project change"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107523-exam-pk0-005-topic-1-question-68-discussion/"
+  },
+  {
+    "question": "A company needs to have structured cabling installed in one of its buildings. Which of the following would be the BEST document for the company to use to obtain and compare information on cabling services and costs from various vendors?",
+    "choices": {
+      "A.": "RFB",
+      "B.": "RFQ",
+      "C.": "RFI",
+      "D.": "RFP"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142309-exam-pk0-005-topic-1-question-198-discussion/"
+  },
+  {
+    "question": "A project manager queries stakeholders to identify the right communication channel to be used during the project life cycle. After reviewing the responses, the project manager reports that 70% of the stakeholders prefer email communication, and the rest prefer face-to-face communication. The project manager should update the stakeholder register with:",
+    "choices": {
+      "A.": "the preferred sponsor's communication channel.",
+      "B.": "the preferred project manager's communication channel.",
+      "C.": "the preferred reported communication channel.",
+      "D.": "email communication as the preferred communication channel."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142314-exam-pk0-005-topic-1-question-164-discussion/"
+  },
+  {
+    "question": "Following the approval of a change by the CCB, which of the following should a project manager consider NEXT when deploying a new networking device into an existing production environment?",
+    "choices": {
+      "A.": "Maintenance window",
+      "B.": "Risk assessment",
+      "C.": "Operational security",
+      "D.": "Validation check"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/153383-exam-pk0-005-topic-1-question-149-discussion/"
+  },
+  {
+    "question": "During the kickoff meeting, a stakeholder raises a concern that an assigned responsibility is outside of the stakeholder's domain. Which of the following would MOST likely be the reason?",
+    "choices": {
+      "A.": "The communication plan is outdated.",
+      "B.": "The project manager did not assess the stakeholders.",
+      "C.": "The project manager did not update the risk register.",
+      "D.": "The statement of work does not reflect the impacted stakeholders."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110606-exam-pk0-005-topic-1-question-134-discussion/"
+  },
+  {
+    "question": "Which of the following is a test that is done on an existing system to ensure the previous functionality still works after a change has been made?",
+    "choices": {
+      "A.": "Smoke testing",
+      "B.": "Regression testing",
+      "C.": "Unit testing",
+      "D.": "User acceptance testing"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107352-exam-pk0-005-topic-1-question-81-discussion/"
+  },
+  {
+    "question": "A segment of a project has ended. Before moving on to the next segment, the project manager wants to assess if the work produced in the previous segment meets a high enough standard and if adequate resources are available to continue the project. Which of the following should the project manager do?",
+    "choices": {
+      "A.": "Review the progress reports.",
+      "B.": "Perform a gap analysis.",
+      "C.": "Coordinate a phase-gate review.",
+      "D.": "Set up touch points with the team."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110501-exam-pk0-005-topic-1-question-86-discussion/"
+  },
+  {
+    "question": "A project manager has been very diligent in maintaining the version control for the documentation of requirements. Which of the following tools is the project manager using?",
+    "choices": {
+      "A.": "Multiauthoring software",
+      "B.": "Word processor",
+      "C.": "Real-time polling",
+      "D.": "Conferencing platforms"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107366-exam-pk0-005-topic-1-question-17-discussion/"
+  },
+  {
+    "question": "A project team is defining operational training, discussing a go-live date, and describing the operational handoff. Which of the following BEST describes what the team is developing?",
+    "choices": {
+      "A.": "The project closeout report",
+      "B.": "A handover to operations",
+      "C.": "Phase-gate review documentation",
+      "D.": "A transition plan"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142312-exam-pk0-005-topic-1-question-180-discussion/"
+  },
+  {
+    "question": "A piece of equipment has malfunctioned and is stalling the completion of a deliverable for a project. Which of the following should the project manager do NEXT?",
+    "choices": {
+      "A.": "Buy a replacement for the faulty equipment.",
+      "B.": "Get the maintenance team to resolve the issue.",
+      "C.": "Escalate the issue to the project sponsor.",
+      "D.": "Rate the severity of the impact the issue has on the project."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140907-exam-pk0-005-topic-1-question-181-discussion/"
+  },
+  {
+    "question": "Which of the following activities would be performed during the project closure phase when the waterfall methodology is being used? (Choose two.)",
+    "choices": {
+      "A.": "Creating a backlog",
+      "B.": "Managing the quality of deliverables",
+      "C.": "Updating the issue log",
+      "D.": "Performing a risk assessment",
+      "E.": "Validating the deliverables",
+      "F.": "Reconciling the project budget"
+    },
+    "answer": [
+      "E",
+      "F"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142311-exam-pk0-005-topic-1-question-187-discussion/"
+  },
+  {
+    "question": "One of the key steps in controlling changes to software is obtaining approval. Which of the following statements BEST describes the reason for this key objective?",
+    "choices": {
+      "A.": "To send the appropriate customer notifications",
+      "B.": "To avoid a negative impact on other software functionalities",
+      "C.": "To ensure adequate resources are in place to implement the change",
+      "D.": "To confirm that the software is a business priority"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142308-exam-pk0-005-topic-1-question-202-discussion/"
+  },
+  {
+    "question": "During a complex, multiyear project, a PM must discern which project tasks overlap so resources can be allocated appropriately. Which of the following is BEST for determining this information?",
+    "choices": {
+      "A.": "PERT chart",
+      "B.": "Milestone chart",
+      "C.": "Gantt chart",
+      "D.": "Budget burndown chart"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140996-exam-pk0-005-topic-1-question-200-discussion/"
+  },
+  {
+    "question": "During an agile project, a team member checked the project artifacts in order to anticipate when all the work should have been completed. Which of the following charts was the team member MOST likely consulting?",
+    "choices": {
+      "A.": "Pareto chart",
+      "B.": "Milestone chart",
+      "C.": "Burndown chart",
+      "D.": "Gantt chart"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142172-exam-pk0-005-topic-1-question-168-discussion/"
+  },
+  {
+    "question": "A project manager is coordinating multiple teams of six people that will each provide feedback for a new product. The teams are recording their opinions, which may be used to define the final product that is sent to mass production. Which of the following BEST describes this technique?",
+    "choices": {
+      "A.": "Demonstration",
+      "B.": "Workshop",
+      "C.": "Brainstorming",
+      "D.": "Focus group"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/142171-exam-pk0-005-topic-1-question-166-discussion/"
+  },
+  {
+    "question": "The project team determines that software installation can only begin after the desktops have been installed and can be powered on. Which of the following dependencies does this represent?",
+    "choices": {
+      "A.": "External",
+      "B.": "Internal",
+      "C.": "Mandatory",
+      "D.": "Discretionary"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107411-exam-pk0-005-topic-1-question-18-discussion/"
+  },
+  {
+    "question": "During a brainstorming meeting, a project manager identifies multiple techniques that will help the project team ensure confidence and alignment with the project scope and goals. Which of the following plans is the project manager creating?",
+    "choices": {
+      "A.": "Procurement",
+      "B.": "Communication",
+      "C.": "Quality assurance",
+      "D.": "Risk"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110736-exam-pk0-005-topic-1-question-76-discussion/"
+  },
+  {
+    "question": "During the project initiation phase, a PM needs to construct a project schedule and show the project dependencies. Which of the following should the PM use for this task?",
+    "choices": {
+      "A.": "Waterfall method",
+      "B.": "Simulation method",
+      "C.": "Precedence diagramming method",
+      "D.": "Critical path method"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117892-exam-pk0-005-topic-1-question-84-discussion/"
+  },
+  {
+    "question": "Which of the following is an activity that should be used in the closing phase of a project to support the project triple constraint?",
+    "choices": {
+      "A.": "Evaluating the project",
+      "B.": "Releasing the resources",
+      "C.": "Closing the contracts",
+      "D.": "Reconciling the budget"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107364-exam-pk0-005-topic-1-question-4-discussion/"
+  },
+  {
+    "question": "A project plan included budgeted funding to set up only a specified number of workstations. A department manager asked a project manager to set up additional workstations just in case the workstations are needed in the future. Which of the following should the project manager do?",
+    "choices": {
+      "A.": "Ask the sponsor for additional funding to accommodate the request.",
+      "B.": "Escalate the request to the senior management team.",
+      "C.": "Advise that a change request would need to be approved.",
+      "D.": "Instruct the project team to set up the additional workstations."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119490-exam-pk0-005-topic-1-question-100-discussion/"
+  },
+  {
+    "question": "Which of the following is a typical characteristic of Scrum?",
+    "choices": {
+      "A.": "Large teams",
+      "B.": "Low-risk scope",
+      "C.": "Self-organized team",
+      "D.": "Well-defined scope"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119482-exam-pk0-005-topic-1-question-95-discussion/"
+  },
+  {
+    "question": "A new project team started work three months ago. The team members are increasing their work productivity and are comfortable asking for help with tasks. Which of the following describes the current stage of the project team?",
+    "choices": {
+      "A.": "Performing",
+      "B.": "Adjourning",
+      "C.": "Forming",
+      "D.": "Norming"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117894-exam-pk0-005-topic-1-question-93-discussion/"
+  },
+  {
+    "question": "A meeting agenda included the following items:•\tReview the goals of the project.•\tReview the progress of the project.•\tDiscuss if the project is ready to move forward.Which of the following BEST describes this type of meeting?",
+    "choices": {
+      "A.": "Stand-up",
+      "B.": "Monthly status",
+      "C.": "Gap analysis",
+      "D.": "Gate review"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117879-exam-pk0-005-topic-1-question-92-discussion/"
+  },
+  {
+    "question": "A PM in a matrix organizational structure has team members who do not have adequate time to dedicate to project activities. Which of the following should the PM do to improve the team members' availability?",
+    "choices": {
+      "A.": "Require overtime for assignments.",
+      "B.": "Conduct training on time management.",
+      "C.": "Negotiate with functional managers.",
+      "D.": "Recruit additional team members."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119481-exam-pk0-005-topic-1-question-91-discussion/"
+  },
+  {
+    "question": "During an audit, a project manager finds out that a contractor exceeded the overtime hours allowed by the contract. Which of the following tools should the PM use to share the details with the management team?",
+    "choices": {
+      "A.": "Time-tracking log",
+      "B.": "Issue log",
+      "C.": "Statement of work",
+      "D.": "Risk register"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/112111-exam-pk0-005-topic-1-question-85-discussion/"
+  },
+  {
+    "question": "During online, collaborative meeting sessions, a project team is consistently in consensus, which is causing a creativity roadblock. Which of the following can the facilitator do to minimize this issue?",
+    "choices": {
+      "A.": "Enable chat.",
+      "B.": "Distribute surveys.",
+      "C.": "Meet face to face.",
+      "D.": "Use a whiteboard."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110500-exam-pk0-005-topic-1-question-83-discussion/"
+  },
+  {
+    "question": "A project manager is assigned to a multinational project with team members from different continents. Which of the following is the MOST important aspect for the project manager to consider?",
+    "choices": {
+      "A.": "Resource allocation",
+      "B.": "Communication security",
+      "C.": "Technological factors",
+      "D.": "Cultural differences"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137139-exam-pk0-005-topic-1-question-45-discussion/"
+  },
+  {
+    "question": "Which of the following would be MOST beneficial to do before a call to ensure all meeting items are addressed and the correct participants attend?",
+    "choices": {
+      "A.": "Assign action items to attendees.",
+      "B.": "Distribute an agenda.",
+      "C.": "Email the minutes from the previous meeting.",
+      "D.": "Schedule a convenient time."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107499-exam-pk0-005-topic-1-question-25-discussion/"
+  },
+  {
+    "question": "A project team was instructed to refurbish old desktops. The following provides the details of the issues observed:Which of the following issues should be addressed FIRST?",
+    "choices": {
+      "A.": "Replace missing peripherals because this process can be easy and less costly.",
+      "B.": "An old operating system issue has the most amount of occurrences.",
+      "C.": "Damage to the monitor has the highest percentage.",
+      "D.": "Address each issue as discovered to avoid rework."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107415-exam-pk0-005-topic-1-question-21-discussion/"
+  },
+  {
+    "question": "A project team needs a tool to store information that is captured throughout the life cycle of a project. The information should be stored in a centralized location that is easily accessible to all stakeholders and will provide search functionality. Which of the following tools should be used?",
+    "choices": {
+      "A.": "Secure folder",
+      "B.": "Real-time, multiauthoring editing software",
+      "C.": "Digital whiteboard",
+      "D.": "Wiki knowledge base"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117891-exam-pk0-005-topic-1-question-82-discussion/"
+  },
+  {
+    "question": "A development team, which is working on a software project, demonstrates software functionality to project stakeholders a week before the implementation date. Several stakeholders comment that the software does not meet the communicated expectations. Which of the following tools should the project manager use to validate the functionality?",
+    "choices": {
+      "A.": "Project status report",
+      "B.": "Requirements Traceability Matrix",
+      "C.": "Defect log",
+      "D.": "Signed project charter",
+      "E.": "Work breakdown structure"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/150681-exam-pk0-005-topic-1-question-145-discussion/"
+  },
+  {
+    "question": "Which of the following BEST illustrates how team members with different roles should interact on the team?",
+    "choices": {
+      "A.": "SOW",
+      "B.": "WBS",
+      "C.": "RACI",
+      "D.": "PERT"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/139964-exam-pk0-005-topic-1-question-69-discussion/"
+  },
+  {
+    "question": "A PM learns about some communication issues with different stakeholders and team members. Which of the following should the PM do NEXT?",
+    "choices": {
+      "A.": "Escalate the communication issues.",
+      "B.": "Implement a communication platform.",
+      "C.": "Review the communication plan.",
+      "D.": "Talk with the head of the PMO."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120351-exam-pk0-005-topic-1-question-77-discussion/"
+  },
+  {
+    "question": "A project manager was not part of a contract negotiation. The project manager is concerned that stakeholders will expect the project to achieve deliverables requested in the RFP. Which of the following documents should the project manager produce FIRST to start communication about the boundaries of the project?",
+    "choices": {
+      "A.": "Milestone chart",
+      "B.": "Work breakdown structure",
+      "C.": "Project charter",
+      "D.": "Detailed scope statement"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107416-exam-pk0-005-topic-1-question-22-discussion/"
+  },
+  {
+    "question": "In an agenda for a kickoff meeting, some time is set aside to complete a document that identifies each member of the project, the members' roles and responsibilities for tasks, the milestones, and the key decisions. In which of the following should this data be documented?",
+    "choices": {
+      "A.": "TOR",
+      "B.": "WBS",
+      "C.": "RAM",
+      "D.": "SOW"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110603-exam-pk0-005-topic-1-question-122-discussion/"
+  },
+  {
+    "question": "A company is implementing a new radar system from July to September. The project manager knows these months are the peak hurricane season for this region. Which of the following should the project manager develop to mitigate the risk to the project?",
+    "choices": {
+      "A.": "Data plan",
+      "B.": "Contingency plan",
+      "C.": "Rollback plan",
+      "D.": "Recovery plan"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/139103-exam-pk0-005-topic-1-question-89-discussion/"
+  },
+  {
+    "question": "During the course of a project, an unexpected event occurs that could ultimately benefit the company. Which of the following is the company employing if the company decides to take advantage of this opportunity?",
+    "choices": {
+      "A.": "Exploit",
+      "B.": "Enhance",
+      "C.": "Accept",
+      "D.": "Mitigate"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119521-exam-pk0-005-topic-1-question-130-discussion/"
+  },
+  {
+    "question": "A critical piece of equipment that is needed for the installation of a point-of-sale solution is delayed from the manufacturer. The delay will cause the project to be significantly behind schedule. The project manager decides to buy the item at a higher cost from another vendor who can supply it immediately. Which of the following risk management approaches has the project manager taken?",
+    "choices": {
+      "A.": "Mitigate",
+      "B.": "Transfer",
+      "C.": "Accept",
+      "D.": "Share"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119326-exam-pk0-005-topic-1-question-131-discussion/"
+  },
+  {
+    "question": "Which of the following cloud models is designed to provide compute, storage, and networking resources on demand?",
+    "choices": {
+      "A.": "Software as a service",
+      "B.": "Infrastructure as a service",
+      "C.": "Data as a service",
+      "D.": "Platform as a service"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/148889-exam-pk0-005-topic-1-question-172-discussion/"
+  },
+  {
+    "question": "An organization was fined due to an audit finding that revealed a third-party vendor was able to see secured project information in a recently implemented system. Which of the following was the cause of this situation?",
+    "choices": {
+      "A.": "The ticket system provided access by default without any approval.",
+      "B.": "The project manager did not perform proper project planning.",
+      "C.": "The system is lacking proper access controls.",
+      "D.": "Sensitive data was incorrectly classified during the audit process."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137420-exam-pk0-005-topic-1-question-78-discussion/"
+  },
+  {
+    "question": "A client provides a project plan to the assigned project manager and suggests that the project manager and team just need to execute the plan. Upon further investigation, the document contains:Purpose -Scope of work -Location of work -Period of performance -Deliverables schedule -Applicable standards -Acceptance criteria -Special requirements -Payment schedule -Which of the following documents did the client provide to the project manager?",
+    "choices": {
+      "A.": "RFP",
+      "B.": "WBS",
+      "C.": "SLA",
+      "D.": "SOW"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137141-exam-pk0-005-topic-1-question-54-discussion/"
+  },
+  {
+    "question": "A project manager reviews a new project charter and notices that the project objective is similar to a project that was done in the past. Which of the following actions should the project manager take?",
+    "choices": {
+      "A.": "Review the existing artifacts and customize accordingly.",
+      "B.": "Utilize the existing artifacts to manage the project.",
+      "C.": "Ask the previous project manager for advice.",
+      "D.": "Notify the sponsor that this project duplicates a prior project."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117883-exam-pk0-005-topic-1-question-138-discussion/"
+  },
+  {
+    "question": "Project A and Project B share a team member. The team member is falling behind on a task for Project B. Which of the following is the BEST action to take to get the task for Project B back on track?",
+    "choices": {
+      "A.": "Negotiate to get more of the team member's available time.",
+      "B.": "Assign the team member to work overtime to finish the task.",
+      "C.": "Speed up completion of the task by assisting the team member.",
+      "D.": "Have the project manager complete the task."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110505-exam-pk0-005-topic-1-question-102-discussion/"
+  },
+  {
+    "question": "A project team gathers weekly to review its progress. Which of the following is the project manager MOST likely to have prepared to ensure team members who are absent remain informed about assignments?",
+    "choices": {
+      "A.": "Status report",
+      "B.": "Project plan",
+      "C.": "Change log",
+      "D.": "Meeting minutes"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107266-exam-pk0-005-topic-1-question-7-discussion/"
+  },
+  {
+    "question": "A PM is responsible for implementing a new customer relationship management system and has learned that the sales organization is reluctant to utilize the new system. The organization’s reluctance could jeopardize the success of the project. Which of the following steps should be taken to understand the adoption issues and gain organizational acceptance of the initiative? (Choose two.)",
+    "choices": {
+      "A.": "Train users on the proper use of the system.",
+      "B.": "Escalate the issue to the CCB.",
+      "C.": "Hold sessions to understand user challenges.",
+      "D.": "Track system usage and report user activity.",
+      "E.": "Log the issue in the project risk register.",
+      "F.": "Create a memorandum of acceptable use."
+    },
+    "answer": [
+      "A",
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107449-exam-pk0-005-topic-1-question-2-discussion/"
+  },
+  {
+    "question": "Following a successful release, a project manager sent a survey to all stakeholders to gain an understanding of opportunity areas for the team. Which of the following can use the survey results as an input?",
+    "choices": {
+      "A.": "Daily stand-up",
+      "B.": "Project momentum",
+      "C.": "Performance feedback",
+      "D.": "Meeting minutes"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107384-exam-pk0-005-topic-1-question-3-discussion/"
+  },
+  {
+    "question": "A project manager is in the closing phase of an IT asset refresh project that involves the disposal of several computers. The project sponsor notified the project manager that the company recently received a penalty as a result of disposing of some computers improperly. Which of the following should have been considered during initial planning to prevent this situation?",
+    "choices": {
+      "A.": "ESG",
+      "B.": "PHI",
+      "C.": "PII",
+      "D.": "ROIL"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107519-exam-pk0-005-topic-1-question-16-discussion/"
+  },
+  {
+    "question": "During the project initiation phase, a project team has been identified. Which of the following is the NEXT step for the project manager?",
+    "choices": {
+      "A.": "Determine budget constraints.",
+      "B.": "Validate the business case.",
+      "C.": "Update the project charter.",
+      "D.": "Create a project schedule."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107524-exam-pk0-005-topic-1-question-67-discussion/"
+  },
+  {
+    "question": "A project implementation partner and the project manager disagree about completed requirements. The project manager shows the project requirements as 70% complete. The implementation partner validates that all requirements were completed. Which of the following would clarify what the project implementation partner was contractually expected to complete?",
+    "choices": {
+      "A.": "SOW",
+      "B.": "RFI",
+      "C.": "RFQ",
+      "D.": "WBS"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110468-exam-pk0-005-topic-1-question-66-discussion/"
+  },
+  {
+    "question": "A project team has just experienced an unexpected event and implemented a work-around. Which of the following documents should be used to record the event? (Choose two.)",
+    "choices": {
+      "A.": "Risk report",
+      "B.": "Defect log",
+      "D.": "Issue log",
+      "C.": "Backlog",
+      "E.": "Change log",
+      "F.": "Progress report"
+    },
+    "answer": [
+      "D",
+      "E"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107525-exam-pk0-005-topic-1-question-65-discussion/"
+  },
+  {
+    "question": "A PM is working with stakeholders in the discovery phase and comparing the cost of the project to the cost savings the project will produce when it is complete. The output of this exercise will produce the:",
+    "choices": {
+      "A.": "ROI.",
+      "B.": "SOW.",
+      "C.": "RFI.",
+      "D.": "RFP."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137144-exam-pk0-005-topic-1-question-64-discussion/"
+  },
+  {
+    "question": "Which of the following BEST identifies the intent and purpose of a project closeout report?",
+    "choices": {
+      "A.": "To provide documentation of lessons learned",
+      "B.": "To document variances from the initial project baseline",
+      "C.": "To validate that a project has been successfully completed",
+      "D.": "To release resources and terminate all access rights"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117889-exam-pk0-005-topic-1-question-63-discussion/"
+  },
+  {
+    "question": "A project manager has been informed that the delivery of required IT equipment will be delayed. Which of the following is the FIRST step the project manager should take?",
+    "choices": {
+      "A.": "Make an impact assessment.",
+      "B.": "Prepare a new purchase order.",
+      "C.": "Select a new vendor.",
+      "D.": "Create a risk register."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/130966-exam-pk0-005-topic-1-question-62-discussion/"
+  },
+  {
+    "question": "During a status meeting, the development team reviews work and finds an unforeseen dependency on one of the critical project activities. As a result, the project will most likely be delayed. Which of the following actions should the project manager MOST likely perform?",
+    "choices": {
+      "A.": "Work with the project scheduler to update the project timeline.",
+      "B.": "Communicate to the stakeholders about the updated timeline.",
+      "C.": "Ask the development team to fast-track upcoming activities.",
+      "D.": "Add two resources so the critical activities will finish on time."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110395-exam-pk0-005-topic-1-question-59-discussion/"
+  },
+  {
+    "question": "Which of the following requires the MOST availability from the business team?",
+    "choices": {
+      "A.": "SDLC",
+      "B.": "Scrum",
+      "C.": "PRINCE2",
+      "D.": "Waterfall"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/133983-exam-pk0-005-topic-1-question-57-discussion/"
+  },
+  {
+    "question": "A financial manager reports that several employees’ allocations from the past month appear to be 200% even though they are only assigned to a particular project. Which of the following could MOST likely be the cause of this issue?",
+    "choices": {
+      "A.": "A project manager assigned the wrong resources.",
+      "B.": "A project manager did not release the resources.",
+      "C.": "A project manager did not remove the system access.",
+      "D.": "A project manager did not provide the project sign-off."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137143-exam-pk0-005-topic-1-question-56-discussion/"
+  },
+  {
+    "question": "Which of the following criteria would favor using the agile methodology to manage an upcoming project?",
+    "choices": {
+      "A.": "Strong projectized organization",
+      "B.": "Medium risk",
+      "C.": "Lack of resources",
+      "D.": "Multiple undefined tasks"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107649-exam-pk0-005-topic-1-question-53-discussion/"
+  },
+  {
+    "question": "A project sponsor asked the PM to provide a summary of the current financial status. The PM uses the following burn up chart for the analysis:Based on the chart, which of the following is the current status of the project?",
+    "choices": {
+      "A.": "Behind schedule and over budget",
+      "B.": "Behind schedule and under budget",
+      "C.": "Ahead of schedule and over budget",
+      "D.": "Ahead of schedule and under budget"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107348-exam-pk0-005-topic-1-question-52-discussion/"
+  },
+  {
+    "question": "A critical business initiative introduced new processes and technology to the organization. Which of the following approaches should be used to ensure the deliverables are increasingly adopted and leveraged by the organization over time?",
+    "choices": {
+      "A.": "Creation of a social news forum",
+      "B.": "Management directives to use the new system",
+      "C.": "New user kickoff meeting",
+      "D.": "Monthly feedback and training sessions"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137140-exam-pk0-005-topic-1-question-51-discussion/"
+  },
+  {
+    "question": "Which of the following items must be protected as PII? (Choose two.)",
+    "choices": {
+      "A.": "Job title",
+      "B.": "Home address",
+      "C.": "Work phone number",
+      "D.": "Time zone",
+      "E.": "Date of birth",
+      "F.": "Blood type"
+    },
+    "answer": [
+      "B",
+      "E"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/133981-exam-pk0-005-topic-1-question-50-discussion/"
+  },
+  {
+    "question": "A visual that displays team progress was created for stand-up meetings. Which of the following BEST describes what is being represented on the visual?",
+    "choices": {
+      "A.": "Decision board",
+      "B.": "Whiteboard",
+      "C.": "Task board",
+      "D.": "Dashboard"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137138-exam-pk0-005-topic-1-question-44-discussion/"
+  },
+  {
+    "question": "Halfway through a project, the sponsor states that the project is taking too long to complete. Which of the following should the project manager consult?",
+    "choices": {
+      "A.": "Gantt chart",
+      "B.": "Maintenance window schedule",
+      "C.": "Functional requirements",
+      "D.": "Test results"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107491-exam-pk0-005-topic-1-question-43-discussion/"
+  },
+  {
+    "question": "A project manager was just assigned to a new project. Which of the following activities should the project manager undertake after accepting the project? (Choose two.)",
+    "choices": {
+      "A.": "Review the detailed plan.",
+      "B.": "Develop a preliminary scope.",
+      "C.": "Develop a transition plan.",
+      "D.": "Develop a project management plan.",
+      "E.": "Review the resource pool.",
+      "F.": "Review the project objectives."
+    },
+    "answer": [
+      "D",
+      "F"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107587-exam-pk0-005-topic-1-question-41-discussion/"
+  },
+  {
+    "question": "The high-level technical requirements for a new application state that the application should be suitable to support enterprise-level client-server solutions. Which of the following meets these requirements?",
+    "choices": {
+      "A.": "Data warehouse",
+      "B.": "SQL database",
+      "C.": "Multitier architecture",
+      "D.": "Content management system"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120273-exam-pk0-005-topic-1-question-40-discussion/"
+  },
+  {
+    "question": "An opportunity emerged in the middle of a project life cycle. Which of the following is the BEST action for the project manager to take?",
+    "choices": {
+      "A.": "Exploit the risk.",
+      "B.": "Accept the risk.",
+      "C.": "Avoid the risk.",
+      "D.": "Transfer the risk."
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107372-exam-pk0-005-topic-1-question-39-discussion/"
+  },
+  {
+    "question": "An IT intern was assigned to set up workstations as part of a project. The IT intern was very careful to do the task well and initially referred to notes while performing the task. By the end of the two-week rotation, the IT intern no longer needed the notes and completed more set-ups in less time. Which of the following MOST likely represents the observed relationship in this scenario?",
+    "choices": {
+      "A.": "",
+      "B.": "",
+      "C.": "",
+      "D.": ""
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107554-exam-pk0-005-topic-1-question-38-discussion/"
+  },
+  {
+    "question": "A project team evaluated the performance of a new reporting system and the quantity of queries to be processed during predetermined time stamps.Which of the following is the current status of the process?",
+    "choices": {
+      "A.": "Based on the rule of seven, the process is under control.",
+      "B.": "The amount of data is insufficient to determine if quality is low.",
+      "C.": "The process is out of control and should be revised.",
+      "D.": "The goal should be adjusted since most of the data points are close to the lower limit."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110783-exam-pk0-005-topic-1-question-34-discussion/"
+  },
+  {
+    "question": "A stakeholder works in a remote location and has not been replying to emails. The Internet service in that location is intermittent, and the stakeholder prefers to be contacted by telephone. Which of the following artifacts should the project manager have prepared to avoid this situation?",
+    "choices": {
+      "A.": "Responsibility assignment matrix",
+      "B.": "Acceptable communication channels",
+      "C.": "Risk registry",
+      "D.": "Staff directory"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137137-exam-pk0-005-topic-1-question-33-discussion/"
+  },
+  {
+    "question": "A project manager has been assigned to a new project. During the planning phase, the project manager needs to get an understanding of the purpose of the project. Which of the following should the project manager do?",
+    "choices": {
+      "A.": "Collate the lessons learned.",
+      "B.": "Perform a gap analysis.",
+      "C.": "Review existing artifacts.",
+      "D.": "Conduct a retrospective."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107455-exam-pk0-005-topic-1-question-31-discussion/"
+  },
+  {
+    "question": "A project manager sent equipment to a global project team for testing purposes. Only 70% of the project team received the equipment for testing. Which of the following considerations is impacting the rest of the team?",
+    "choices": {
+      "A.": "Quality assurance",
+      "B.": "Organizational branding restrictions",
+      "C.": "State privacy acts",
+      "D.": "Country legal regulations"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137136-exam-pk0-005-topic-1-question-30-discussion/"
+  },
+  {
+    "question": "A company that is implementing an updated version of its main product hired a new project manager to lead the project. Prior to the start of the project, the sponsor asked the project manager to prepare a report on the defects found in the previous project to avoid a decrease in production. The report shows that the two main defects are related to cosmetic and physical damage to the product. Which of the following charts would BEST prioritize which defects to address?",
+    "choices": {
+      "A.": "Pareto",
+      "B.": "Run",
+      "C.": "Control",
+      "D.": "Histogram"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137133-exam-pk0-005-topic-1-question-27-discussion/"
+  },
+  {
+    "question": "A third party needs to perform a short-term task for which the duration cannot be accurately estimated and the cost cannot be calculated in advance. Which of the following should the project manager put in place before work begins?",
+    "choices": {
+      "A.": "Time and materials contract",
+      "B.": "Master service agreement",
+      "C.": "Fixed-price contract",
+      "D.": "Statement of work",
+      "E.": "Cost-plus agreement"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107498-exam-pk0-005-topic-1-question-24-discussion/"
+  },
+  {
+    "question": "Due to budgetary and time constraints, a PM scheduled a meeting with all stakeholders during the planning phase to review the requirements and come to an agreement on the minimum viable product that would be acceptable. Which of the following would be used to document this input?",
+    "choices": {
+      "A.": "Project change management plan",
+      "B.": "Project management plan",
+      "C.": "Project transition plan",
+      "D.": "Project communication plan"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107414-exam-pk0-005-topic-1-question-20-discussion/"
+  },
+  {
+    "question": "Which of the following should occur when implementing an IT infrastructure change that takes risks into consideration?",
+    "choices": {
+      "A.": "Approving the change request",
+      "B.": "Developing a rollback plan",
+      "C.": "Gathering necessary resources",
+      "D.": "Defining requirements"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/137119-exam-pk0-005-topic-1-question-14-discussion/"
+  },
+  {
+    "question": "During a staff meeting, a project manager voices a concern about the client billing rate for a particular engineer. Which of the following documents would the project manager need in order to find this information?",
+    "choices": {
+      "A.": "SLA",
+      "B.": "TOR",
+      "C.": "SOW",
+      "D.": "NDA"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107517-exam-pk0-005-topic-1-question-13-discussion/"
+  },
+  {
+    "question": "A PM has identified all the resources involved in a project. The next step is to identify which resources are responsible for which tasks. Which of the following should be used to document this information?",
+    "choices": {
+      "A.": "RFI",
+      "B.": "RACI",
+      "C.": "WBS",
+      "D.": "SOW"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107518-exam-pk0-005-topic-1-question-12-discussion/"
+  },
+  {
+    "question": "As part of the planning phase, a PM has defined tasks, durations, resources, and costs. Which of the following is the NEXT step in the process?",
+    "choices": {
+      "A.": "Update the work breakdown structure.",
+      "B.": "Review the backlog.",
+      "C.": "Seek baseline approval.",
+      "D.": "Establish the resource pool."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107463-exam-pk0-005-topic-1-question-9-discussion/"
+  },
+  {
+    "question": "A project manager prefers to have immediate contact with team members because it allows for faster response times and more interactive discussions. Which of the following communication methods should the project manager use?",
+    "choices": {
+      "A.": "Synchronous",
+      "B.": "Informal",
+      "C.": "Asynchronous",
+      "D.": "Formal"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107267-exam-pk0-005-topic-1-question-8-discussion/"
+  },
+  {
+    "question": "Which of the following BEST describes how an organization should coordinate management of multiple related projects?",
+    "choices": {
+      "A.": "Apply the SDLC process.",
+      "B.": "Establish a program.",
+      "C.": "Consult the CCB.",
+      "D.": "Use different frameworks."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107261-exam-pk0-005-topic-1-question-6-discussion/"
+  },
+  {
+    "question": "Two projects share resources. The mobile application project cannot start if the database renewal project has not started. Which of the following relationships describes this situation?",
+    "choices": {
+      "A.": "Start-to-finish",
+      "B.": "Start-to-start",
+      "C.": "Finish-to-start",
+      "D.": "Finish-to-finish"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110602-exam-pk0-005-topic-1-question-120-discussion/"
+  },
+  {
+    "question": "A project team is working remotely from different locations across the country. As part of a lessons-learned exercise, the project manager would like to identify the level of engagement among project team members. Which of the following would be the BEST tool for the project manager to use?",
+    "choices": {
+      "A.": "Meeting chat",
+      "B.": "Email",
+      "C.": "Real-time survey",
+      "D.": "Whiteboard"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117018-exam-pk0-005-topic-1-question-136-discussion/"
+  },
+  {
+    "question": "When trying to calculate the expected monetary value for using a particular vendor, which of the following charts would be BEST to use?",
+    "choices": {
+      "A.": "Decision tree",
+      "B.": "Fishbone",
+      "C.": "Histogram",
+      "D.": "Pareto"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119510-exam-pk0-005-topic-1-question-119-discussion/"
+  },
+  {
+    "question": "Which of the following methodologies/frameworks should be used when incremental value is expected in a timeboxed period?",
+    "choices": {
+      "A.": "PRINCE2",
+      "B.": "Waterfall",
+      "C.": "Scrum",
+      "D.": "SLDC"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119503-exam-pk0-005-topic-1-question-116-discussion/"
+  },
+  {
+    "question": "During the execution of production for a bike, a PM was hired. One month later, the PM has been receiving multiple project report requests from stakeholders. Which of the following should the PM do FIRST?",
+    "choices": {
+      "A.": "Discuss the requests with the sponsor.",
+      "B.": "Prepare and send the information.",
+      "C.": "Assign this task to the project team.",
+      "D.": "Review the communication plan."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119498-exam-pk0-005-topic-1-question-112-discussion/"
+  },
+  {
+    "question": "Which of the following is a web template that is used to create websites?",
+    "choices": {
+      "A.": "ERP",
+      "B.": "CRM",
+      "C.": "EDRMS",
+      "D.": "CMS"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119591-exam-pk0-005-topic-1-question-139-discussion/"
+  },
+  {
+    "question": "A project manager is assigned to a large, complex project that is very new to the organization. Because of huge expenditures, the project cannot be cancelled after it starts. Which of the following is most important for the project manager to do FIRST?",
+    "choices": {
+      "A.": "Carefully select the vendor.",
+      "B.": "Identify and evaluate risks.",
+      "C.": "Establish change management procedures.",
+      "D.": "Evaluate the resource pool."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119493-exam-pk0-005-topic-1-question-106-discussion/"
+  },
+  {
+    "question": "After a meeting, a team member recaps all of the topics that worked well, worked relatively well, and did not work at all. The expectation is for upcoming project work to make better progress and achieve targets. Which of the following combinations of tactics is being used?",
+    "choices": {
+      "A.": "Stand-up meeting, action items",
+      "B.": "Workshop meeting, timeboxing",
+      "C.": "Status meeting, follow-ups",
+      "D.": "Presentation meeting, meeting notes"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110504-exam-pk0-005-topic-1-question-98-discussion/"
+  },
+  {
+    "question": "A project manager reports that the implementation of a new system is on track to be completed under budget and ahead of the schedule. A stakeholder then asks the manager to add mobile device functionality. Which of the following should the project manager do in response to the request?",
+    "choices": {
+      "A.": "Decline because it is not included in the project scope.",
+      "B.": "Assess the impact of the request and create a change request.",
+      "C.": "Create new functional and non-functional requirements for mobile devices.",
+      "D.": "Revise the baseline of the project plan by adding the new requirements."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119600-exam-pk0-005-topic-1-question-74-discussion/"
+  },
+  {
+    "question": "For an upcoming project kickoff, a PM is looking for a way to illustrate roles for major project activities. Which of the following would be the MOST useful option?",
+    "choices": {
+      "A.": "Resource plan",
+      "B.": "Organizational chart",
+      "C.": "Project charter",
+      "D.": "RACI chart"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120350-exam-pk0-005-topic-1-question-70-discussion/"
+  },
+  {
+    "question": "A project manager reviews the watch list and notices the probability of occurrence has increased for one item listed in this document; consequently, frequent monitoring is required. Which of the following tools should the project manager update NEXT?",
+    "choices": {
+      "A.": "Defect log",
+      "B.": "Stakeholder register",
+      "C.": "Issue log",
+      "D.": "Risk register"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119513-exam-pk0-005-topic-1-question-124-discussion/"
+  },
+  {
+    "question": "During a project sprint, an analyst explains multiple situations the team encountered after the previous day's sessions. The analyst then lists the tasks that need to be completed before the end of the day. Which of the following meeting types is the team utilizing?",
+    "choices": {
+      "A.": "Stand-up meeting",
+      "B.": "Workshop meeting",
+      "C.": "Kick-off meeting",
+      "D.": "Presentation meeting"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119512-exam-pk0-005-topic-1-question-123-discussion/"
+  },
+  {
+    "question": "Which of the following is a consideration when determining a project's ESG factors?",
+    "choices": {
+      "A.": "Project management methodology",
+      "B.": "IT infrastructure security",
+      "C.": "Proper accounting practices",
+      "D.": "Corporate values compliance"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119511-exam-pk0-005-topic-1-question-121-discussion/"
+  },
+  {
+    "question": "Which of the following methods frequently delivers new code in an automatic way for development projects?",
+    "choices": {
+      "A.": "Automated testing",
+      "B.": "CI/CD process",
+      "C.": "Validation checks",
+      "D.": "Deploy sprint"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119508-exam-pk0-005-topic-1-question-118-discussion/"
+  },
+  {
+    "question": "A project manager has just finished overseeing the implementation of a new, self-service benefits enrollment system. Many employees, however, are calling the human resources team for assistance instead of using the self-service system. Which of the following should the project manager have done as part of the execution plan?",
+    "choices": {
+      "A.": "Establish a minimally viable product.",
+      "B.": "Prepare new knowledge base documentation.",
+      "C.": "Update the project baseline and schedule.",
+      "D.": "Periodically review vendor performance."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119507-exam-pk0-005-topic-1-question-117-discussion/"
+  },
+  {
+    "question": "Internal project team members and a subject matter expert had a heated discussion about the client's needs. The deliverable is now at risk of being delayed. Which of the following should be notified LAST?",
+    "choices": {
+      "A.": "Program manager",
+      "B.": "End user",
+      "C.": "Steering committee",
+      "D.": "Project sponsor"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119502-exam-pk0-005-topic-1-question-115-discussion/"
+  },
+  {
+    "question": "A team member finds a malfunctioning procedure in the system that will take a considerable amount of time to fix. Which of the following should be done FIRST?",
+    "choices": {
+      "A.": "Update the risk register",
+      "B.": "Document the finding in the change log.",
+      "C.": "Create a record in the issue log",
+      "D.": "Detail a proposed solution."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119499-exam-pk0-005-topic-1-question-113-discussion/"
+  },
+  {
+    "question": "A project has been initiated to provide insurance forms for a company. A constraint for this project is that the insurance commission in each state where the company underwrites has to approve each form. Which of the following compliance considerations BEST describes this scenario?",
+    "choices": {
+      "A.": "Regulatory impacts",
+      "B.": "Environmental impacts",
+      "C.": "Organizational impacts",
+      "D.": "Sensitive data types"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119497-exam-pk0-005-topic-1-question-111-discussion/"
+  },
+  {
+    "question": "A project manager is working on a project charter and has successfully documented the project objectives and the success criteria. Which of the following should the project manager define NEXT to complete the project charter?",
+    "choices": {
+      "A.": "Proposed solution design",
+      "B.": "Preliminary scope statement",
+      "C.": "Responsibility assignment\tmatrix",
+      "D.": "Initial budget baseline"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119496-exam-pk0-005-topic-1-question-110-discussion/"
+  },
+  {
+    "question": "Which of the following would be the MOST beneficial to determine whether a project has met the defined objectives?",
+    "choices": {
+      "A.": "Schedule variance",
+      "B.": "Cost variance",
+      "C.": "Work breakdown structure",
+      "D.": "Key performance indicators"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119495-exam-pk0-005-topic-1-question-109-discussion/"
+  },
+  {
+    "question": "A project manager is discussing with team members sensitive project information that should not be disclosed outside of the office. Which of the following BEST describes this type of information?",
+    "choices": {
+      "A.": "Intellectual property",
+      "B.": "Marketing",
+      "C.": "Trade secret",
+      "D.": "Top secret"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119494-exam-pk0-005-topic-1-question-108-discussion/"
+  },
+  {
+    "question": "Two team members have a minor disagreement on how a task should be performed. The project manager plans to meet with the team members to discuss the matter. Which of the following techniques should the project manager use to emphasize the areas of agreement and downplay the opposing views?",
+    "choices": {
+      "A.": "Compromising",
+      "B.": "Forcing",
+      "C.": "Smoothing",
+      "D.": "Collaborating"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117141-exam-pk0-005-topic-1-question-105-discussion/"
+  },
+  {
+    "question": "A project manager has been assigned to a project that involves replacing key operational equipment. The project manager is new to the industry and has learned that compliance requirements must be met. Which of the following should the project manager do FIRST?",
+    "choices": {
+      "A.": "Trust that the project requirements fully document the necessary compliances.",
+      "B.": "Meet with the end users to learn more about the compliance requirements.",
+      "C.": "Research the compliance requirements related to the project to understand the implications.",
+      "D.": "Make the QA specialist responsible for ensuring that the compliance requirements are met."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119492-exam-pk0-005-topic-1-question-104-discussion/"
+  },
+  {
+    "question": "In the middle of a five-year project, a vendor asked the buyer to revisit the rate card associated with the development team. According to the vendor, the development team's experience and technical skills have increased since the project started. Which of the following documents should the buyer review FIRST?",
+    "choices": {
+      "A.": "MOU",
+      "B.": "SOW",
+      "C.": "RFP",
+      "D.": "RFI"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119484-exam-pk0-005-topic-1-question-99-discussion/"
+  },
+  {
+    "question": "Which of the following key project elements is used to organize deliverables into manageable pieces to ensure the proper steps are executed and to achieve the project's core objectives?",
+    "choices": {
+      "A.": "WBS",
+      "B.": "RACI",
+      "C.": "RFP",
+      "D.": "PERT"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119483-exam-pk0-005-topic-1-question-97-discussion/"
+  },
+  {
+    "question": "After a product is released for production, a tester performs a test to ensure its basic functionality is working as expected. Which of the following is the tester performing?",
+    "choices": {
+      "A.": "Smoke test",
+      "B.": "Stress test",
+      "C.": "Penetration test",
+      "D.": "Regression test"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117884-exam-pk0-005-topic-1-question-140-discussion/"
+  },
+  {
+    "question": "During the planning phase, a project manager held a meeting to discuss meeting days, meeting times, meeting frequency, and tools to use. Which of the following will the project manager use to document this data?",
+    "choices": {
+      "A.": "Project communication plan",
+      "B.": "Project charter",
+      "C.": "Project management plan",
+      "D.": "Project plan"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117898-exam-pk0-005-topic-1-question-129-discussion/"
+  },
+  {
+    "question": "A developer focused on a single story during an entire sprint. The story was underestimated and, therefore, was not completed. Which of the following steps should the Scrum team take NEXT?",
+    "choices": {
+      "A.": "Assign more resources to complete similar stories in the future.",
+      "B.": "Break the stories into workable items that can be completed within one sprint.",
+      "C.": "Extend the sprint duration when required with the approval of the product owner.",
+      "D.": "Release the current progress into production and carry over the rest of the code for the next sprint."
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119520-exam-pk0-005-topic-1-question-128-discussion/"
+  },
+  {
+    "question": "A PM is working on the preliminary scope statement and identifies that this project has the same approach as another project that was completed last year. Which of the following actions would the PM MOST likely perform?",
+    "choices": {
+      "A.": "Call the previous PM for advice on risks and issues.",
+      "B.": "Ask the project sponsor to provide previous final project report results.",
+      "C.": "Complete the project charter using the other PM's subject matter expertise.",
+      "D.": "Use existing artifacts and accommodate based on the current project success criteria."
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119517-exam-pk0-005-topic-1-question-127-discussion/"
+  },
+  {
+    "question": "Which of the following IT elements allows developers to leverage existing code to integrate with other software systems?",
+    "choices": {
+      "A.": "SaaS",
+      "B.": "API",
+      "C.": "Databases",
+      "D.": "End user applications"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119514-exam-pk0-005-topic-1-question-125-discussion/"
+  },
+  {
+    "question": "When creating a project schedule, a project manager adds activities with zero duration. Which of the following describes these types of activities?",
+    "choices": {
+      "A.": "Critical paths",
+      "B.": "Resources",
+      "C.": "Milestones",
+      "D.": "Work breakdown structures"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/109124-exam-pk0-005-topic-1-question-73-discussion/"
+  },
+  {
+    "question": "In the kickoff meeting, a project manager announced the project will use a tool to store documents, artifacts, and any other data relevant to the project. The tool will perform version control, maintain retention data, and archive destruction or historical information. Which of the following is being described?",
+    "choices": {
+      "A.": "Record management system",
+      "B.": "Project dashboard",
+      "C.": "Backlog",
+      "D.": "Wiki knowledge base"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117896-exam-pk0-005-topic-1-question-96-discussion/"
+  },
+  {
+    "question": "Which of the following can be used to determine whether a sample product is within an acceptable range?",
+    "choices": {
+      "A.": "Scatter diagram",
+      "B.": "Velocity chart",
+      "C.": "Control chart",
+      "D.": "Fishbone diagram"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117893-exam-pk0-005-topic-1-question-87-discussion/"
+  },
+  {
+    "question": "Defects associated with project deliverables have been reported. The project team needs to find the cause of the defects. Which of the following tools should the project team use to find the cause?",
+    "choices": {
+      "A.": "Kanban board",
+      "B.": "Pareto chart",
+      "C.": "Ishikawa diagram",
+      "D.": "Decision tree"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/117245-exam-pk0-005-topic-1-question-71-discussion/"
+  },
+  {
+    "question": "Which of the following pieces of data are examples of PII?",
+    "choices": {
+      "A.": "Medical record and test result values",
+      "B.": "IP address and email address",
+      "C.": "Name and year of birth",
+      "D.": "X-ray and blood type"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140881-exam-pk0-005-topic-1-question-156-discussion/"
+  },
+  {
+    "question": "During a quality analysis review, the causes of several issues have been highlighted. Which of the following should the project manager use to identify the MOST important causes?",
+    "choices": {
+      "A.": "Ishikawa diagram",
+      "B.": "Scatter diagram",
+      "C.": "Pareto chart",
+      "D.": "Decision tree"
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107265-exam-pk0-005-topic-1-question-5-discussion/"
+  },
+  {
+    "question": "Which of the following is the BEST example of a breach of physical security?",
+    "choices": {
+      "A.": "System user IDs being used by multiple individuals",
+      "B.": "Printers that do not request user authentication",
+      "C.": "Developers having full access to both development and production environments",
+      "D.": "Project documentation that is only kept on a removable device"
+    },
+    "answer": [
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/110503-exam-pk0-005-topic-1-question-94-discussion/"
+  },
+  {
+    "question": "A project manager needs to update the project sponsor and senior stakeholders about the progress of a project. Which of the following tools will the project manager MOST likely use?",
+    "choices": {
+      "A.": "Dashboard",
+      "B.": "Gantt chart",
+      "C.": "Work breakdown structure",
+      "D.": "Requirements Traceability Matrix"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/108708-exam-pk0-005-topic-1-question-72-discussion/"
+  },
+  {
+    "question": "Which of the following offers administrators more direct control over operating systems?",
+    "choices": {
+      "A.": "Infrastructure as a service",
+      "B.": "Software as a service",
+      "C.": "Functions as a service",
+      "D.": "Platform as a service"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107493-exam-pk0-005-topic-1-question-49-discussion/"
+  },
+  {
+    "question": "A program manager is reviewing the project portfolio and prioritizing each project based on the company’s strategic plan. Which of the following should be considered in this evaluation? (Choose two.)",
+    "choices": {
+      "A.": "Company vision",
+      "B.": "Global environment",
+      "C.": "Brand value",
+      "D.": "Mission statement",
+      "E.": "Portfolio budget",
+      "F.": "Local legislation"
+    },
+    "answer": [
+      "A",
+      "D"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/120274-exam-pk0-005-topic-1-question-42-discussion/"
+  },
+  {
+    "question": "Given the following network diagram:Which of the following is the critical path?",
+    "choices": {
+      "A.": "A-C-G-K-M",
+      "B.": "A-B-D-I-L-M",
+      "C.": "A-B-E-J-L-M",
+      "D.": "A-B-F-L-M"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140908-exam-pk0-005-topic-1-question-175-discussion/"
+  },
+  {
+    "question": "While working in a collaborative, online brainstorming session, team members send private messages to the facilitator about challenges understanding others when they are speaking due to accents and background noises. Which of the following should the facilitator do to overcome the challenges?",
+    "choices": {
+      "A.": "Instruct the team members to set their speakers to maximum volume and mute their microphones.",
+      "B.": "Require everyone to turn on their cameras and use the same background filter.",
+      "C.": "Encourage the use of the chat and use plain language when speaking.",
+      "D.": "Allow one person to speak at a time after receiving acknowledgment from the facilitator."
+    },
+    "answer": [
+      "C"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/140912-exam-pk0-005-topic-1-question-167-discussion/"
+  },
+  {
+    "question": "A portfolio manager needs to provide the senior management team with a dynamic, high-level, monthly status update on all active projects in the portfolio. Which of the following should the manager use to accomplish this task?",
+    "choices": {
+      "A.": "Dashboard",
+      "B.": "Status report",
+      "C.": "Gantt chart",
+      "D.": "Email"
+    },
+    "answer": [
+      "A"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/119491-exam-pk0-005-topic-1-question-103-discussion/"
+  },
+  {
+    "question": "An institution wants to implement software solutions to help manage the internal flow for formally responding in writing to citizens’ complaints. Which of the following solutions would be BEST?",
+    "choices": {
+      "A.": "Enterprise resource planning and end user applications",
+      "B.": "Electronic document and record management systems",
+      "C.": "Customer relationship management and databases",
+      "D.": "Content management and financial systems"
+    },
+    "answer": [
+      "B"
+    ],
+    "source": "https://www.examtopics.com/discussions/comptia/view/107522-exam-pk0-005-topic-1-question-79-discussion/"
+  }
+];
+
+    const quizContainer = document.getElementById("quiz-container");
+    const nextBtn = document.getElementById("next-btn");
+
+    function renderQuestions(page) {
+      quizContainer.innerHTML = "";
+      const start = page * QUESTIONS_PER_PAGE;
+      const end = start + QUESTIONS_PER_PAGE;
+      const pageQuestions = questions.slice(start, end);
+
+      if (pageQuestions.length === 0) {
+        quizContainer.innerHTML = "<p>これで全ての問題が終了しました！</p>";
+        nextBtn.style.display = "none";
+        return;
+      }
+
+      pageQuestions.forEach((q, index) => {
+        const questionNumber = start + index + 1;
+        const block = document.createElement("div");
+        block.className = "question-block";
+
+        const questionEl = document.createElement("div");
+        questionEl.className = "question-text";
+        questionEl.textContent = `${questionNumber}. ${q.question}`;
+
+        const choicesList = document.createElement("ul");
+        choicesList.className = "choices";
+
+        Object.entries(q.choices).forEach(([key, value]) => {
+          const letter = key.replace('.', '');
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${key}</strong> ${value}`;
+          li.dataset.choice = letter;
+          li.addEventListener("click", () => {
+            if (li.classList.contains("correct") || li.classList.contains("incorrect")) return;
+            if (q.answer.includes(letter)) {
+              li.classList.add("correct");
+            } else {
+              li.classList.add("incorrect");
+            }
+          });
+          choicesList.appendChild(li);
+        });
+
+        // メモ欄の作成
+        const memoEl = document.createElement("div");
+        memoEl.className = "memo";
+        const textarea = document.createElement("textarea");
+        textarea.placeholder = "メモを入力してください...";
+        textarea.id = `memo_${questionNumber}`;
+        textarea.value = localStorage.getItem(textarea.id) || ""; // 復元
+        textarea.addEventListener("input", () => {
+          localStorage.setItem(textarea.id, textarea.value); // 自動保存
+        });
+        memoEl.appendChild(textarea);
+
+        // 出典元リンクの追加
+        const sourceEl = document.createElement("div");
+        sourceEl.className = "source";
+        if (q.source) {
+          sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
+        }
+
+        block.appendChild(questionEl);
+        block.appendChild(choicesList);
+        block.appendChild(memoEl);
+        block.appendChild(sourceEl);
+
+        quizContainer.appendChild(block);
+      });
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentPage++;
+      renderQuestions(currentPage);
+    });
+
+    renderQuestions(currentPage);
+  </script>
+</body>
+</html>

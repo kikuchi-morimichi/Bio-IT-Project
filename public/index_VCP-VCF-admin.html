@@ -25,12 +25,62 @@
       color: #333;
     }
 
-    /* 新しいモード切り替えボタンのコンテナのスタイル */
+    /* トグルスイッチのコンテナ */
     .mode-toggle-container {
       display: flex;
-      justify-content: center; /* 中央揃え */
-      margin-bottom: 20px; /* 下にスペース */
+      justify-content: center;
+      margin-bottom: 20px;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden; /* 角丸を適用 */
+      width: fit-content; /* 内容に合わせて幅を調整 */
+      margin-left: auto; /* 中央揃え */
+      margin-right: auto; /* 中央揃え */
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* 内側の影 */
     }
+
+    /* ラジオボタンを非表示にする */
+    .mode-toggle-container input[type="radio"] {
+      display: none;
+    }
+
+    /* ラベルをボタンのようにスタイリング */
+    .mode-toggle-container label {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #555;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+      flex-grow: 1; /* 親要素内で均等に幅を広げる */
+      text-align: center; /* テキスト中央揃え */
+      white-space: nowrap; /* テキストの折り返しを防ぐ */
+      position: relative; /* 疑似要素のために必要 */
+    }
+
+    /* 選択されたラベルのスタイル */
+    .mode-toggle-container input[type="radio"]:checked + label {
+      background-color: #007BFF;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 選択されたボタンの影 */
+      z-index: 1; /* 選択されたラベルを前面に */
+    }
+
+    /* ホバー時のスタイル */
+    .mode-toggle-container label:hover:not(input[type="radio"]:checked + label) {
+      background-color: #d0e8ff;
+    }
+
+    /* 選択されたラベルの左右の角を調整 (もし必要なら) */
+    .mode-toggle-container input[type="radio"]#mode-all:checked + label {
+        border-top-left-radius: 8px;
+        border-bottom-left-radius: 8px;
+    }
+    .mode-toggle-container input[type="radio"]#mode-review:checked + label {
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
 
     .question-block {
       margin-bottom: 30px;
@@ -135,21 +185,18 @@
       background-color: #ccc;
       cursor: not-allowed;
     }
-
-    /* トグルボタンの選択状態 */
-    button.active-mode {
-      background-color: #0056b3; /* 選択されているボタンの色 */
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>VCP-VCF Administrator 2V0-11.25, 2V0-11.24</h1>
-    <!-- 新しいモード切り替えボタンのコンテナ -->
+    <!-- トグルスイッチとして機能するモード切り替えのHTML -->
     <div class="mode-toggle-container">
-      <button id="show-all-btn">全問題</button>
-      <button id="show-review-btn">見直し問題</button>
+      <input type="radio" id="mode-all" name="quiz-mode" value="all" checked>
+      <label for="mode-all">全問題</label>
+
+      <input type="radio" id="mode-review" name="quiz-mode" value="review">
+      <label for="mode-review">見直し問題</label>
     </div>
 
     <div id="quiz-container"></div>
@@ -1600,23 +1647,14 @@
     const quizContainer = document.getElementById("quiz-container");
     const nextBtn = document.getElementById("next-btn");
     const prevBtn = document.getElementById("prev-btn");
-    const showReviewBtn = document.getElementById("show-review-btn");
-    const showAllBtn = document.getElementById("show-all-btn");
 
-    function updateModeButtons() {
-      showAllBtn.classList.remove('active-mode');
-      showReviewBtn.classList.remove('active-mode');
-
-      if (currentMode === 'all') {
-        showAllBtn.classList.add('active-mode');
-      } else {
-        showReviewBtn.classList.add('active-mode');
-      }
-    }
+    // モード切り替えラジオボタン
+    const modeAllRadio = document.getElementById("mode-all");
+    const modeReviewRadio = document.getElementById("mode-review");
 
     function renderQuestions(page) {
       currentMode = 'all';
-      updateModeButtons();
+      // updateModeButtons() は不要になりました
 
       quizContainer.innerHTML = "";
       const start = page * QUESTIONS_PER_PAGE;
@@ -1743,7 +1781,7 @@
 
     function renderReviewQuestions() {
       currentMode = 'review';
-      updateModeButtons();
+      // updateModeButtons() は不要になりました
 
       quizContainer.innerHTML = "";
       const reviewQuestionNumbers = Object.keys(reviewState).filter(key => reviewState[key]).map(Number).sort((a, b) => a - b);
@@ -1884,13 +1922,18 @@
       }
     });
 
-    showReviewBtn.addEventListener("click", () => {
-      renderReviewQuestions();
+    // ラジオボタンの変更イベントリスナー
+    modeAllRadio.addEventListener("change", () => {
+      if (modeAllRadio.checked) {
+        currentPage = 0; // 全問題表示時は最初のページに戻る
+        renderQuestions(currentPage);
+      }
     });
 
-    showAllBtn.addEventListener("click", () => {
-      currentPage = 0; // 全問題表示時は最初のページに戻る
-      renderQuestions(currentPage);
+    modeReviewRadio.addEventListener("change", () => {
+      if (modeReviewRadio.checked) {
+        renderReviewQuestions();
+      }
     });
 
     // 初期表示

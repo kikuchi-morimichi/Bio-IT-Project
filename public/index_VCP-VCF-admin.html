@@ -25,10 +25,21 @@
       color: #333;
     }
 
+    /* 新しいモード切り替えボタンのコンテナのスタイル */
+    .mode-toggle-container {
+      display: flex;
+      justify-content: center; /* 中央揃え */
+      margin-bottom: 20px; /* 下にスペース */
+    }
+
     .question-block {
       margin-bottom: 30px;
       padding: 15px;
       border-bottom: 1px solid #ccc;
+    }
+
+    .review-flag {
+      background-color: #fff7cc; /* 黄色系 */
     }
 
     .question-text {
@@ -90,9 +101,18 @@
       resize: vertical;
     }
 
-    #next-btn {
-      display: block;
-      margin: 30px auto 0;
+    .review {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+
+    button {
       padding: 10px 20px;
       font-size: 16px;
       background-color: #007BFF;
@@ -100,25 +120,58 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 10px; /* ボタン間に少しスペースを追加 */
     }
 
-    #next-btn:hover {
+    button:last-child {
+      margin-right: 0;
+    }
+
+    button:hover {
       background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* トグルボタンの選択状態 */
+    button.active-mode {
+      background-color: #0056b3; /* 選択されているボタンの色 */
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>VCP-VCF Administrator 2V0-11.25, 2V0-11.24</h1>
+    <!-- 新しいモード切り替えボタンのコンテナ -->
+    <div class="mode-toggle-container">
+      <button id="show-all-btn">全問題</button>
+      <button id="show-review-btn">見直し問題</button>
+    </div>
+
     <div id="quiz-container"></div>
-    <button id="next-btn">次の10問</button>
+    <div class="btn-container">
+      <button id="prev-btn">前の10問</button>
+      <button id="next-btn">次の10問</button>
+    </div>
   </div>
 
   <script>
     const QUESTIONS_PER_PAGE = 10;
     let currentPage = 0;
+    let currentMode = 'all'; // 'all' または 'review'
+
+    // 回答状態（リロードでリセット）
+    let answersState = {};
+
+    // 見直し状態（リロードしても保持）
+    let reviewState = JSON.parse(localStorage.getItem("reviewState") || "{}");
 
     const questions = [
+      
   {
     "question": "An administrator is tasked with deploying a new VMware Cloud Foundation (VCF) instance. The management domain is designed to be created with three virtual distributed switches (VDS) configured as follows:VDS1 - used for management and vMotion trafficVDS2 - used for vSAN traffic -VDS3 - used for NSX Overlay trafficWhat action would the administrator take to deploy the designed configuration?",
     "choices": {
@@ -1542,27 +1595,50 @@
     ],
     "source": "https://www.examtopics.com/discussions/vmware/view/156196-exam-2v0-1124-topic-1-question-51-discussion/"
   }
-];
+    ];
 
     const quizContainer = document.getElementById("quiz-container");
     const nextBtn = document.getElementById("next-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const showReviewBtn = document.getElementById("show-review-btn");
+    const showAllBtn = document.getElementById("show-all-btn");
+
+    function updateModeButtons() {
+      showAllBtn.classList.remove('active-mode');
+      showReviewBtn.classList.remove('active-mode');
+
+      if (currentMode === 'all') {
+        showAllBtn.classList.add('active-mode');
+      } else {
+        showReviewBtn.classList.add('active-mode');
+      }
+    }
 
     function renderQuestions(page) {
+      currentMode = 'all';
+      updateModeButtons();
+
       quizContainer.innerHTML = "";
       const start = page * QUESTIONS_PER_PAGE;
       const end = start + QUESTIONS_PER_PAGE;
       const pageQuestions = questions.slice(start, end);
 
-      if (pageQuestions.length === 0) {
+      if (pageQuestions.length === 0 && questions.length > 0) {
         quizContainer.innerHTML = "<p>これで全ての問題が終了しました！</p>";
-        nextBtn.style.display = "none";
-        return;
+      } else if (questions.length === 0) {
+        quizContainer.innerHTML = "<p>問題が定義されていません。</p>";
       }
+
 
       pageQuestions.forEach((q, index) => {
         const questionNumber = start + index + 1;
         const block = document.createElement("div");
         block.className = "question-block";
+
+        // 見直しフラグ適用
+        if (reviewState[questionNumber]) {
+          block.classList.add("review-flag");
+        }
 
         const questionEl = document.createElement("div");
         questionEl.className = "question-text";
@@ -1576,30 +1652,73 @@
           const li = document.createElement("li");
           li.innerHTML = `<strong>${key}</strong> ${value}`;
           li.dataset.choice = letter;
-          li.addEventListener("click", () => {
-            if (li.classList.contains("correct") || li.classList.contains("incorrect")) return;
+
+          // 回答復元（ページ移動のみ）
+          if (answersState[questionNumber]?.includes(letter)) {
             if (q.answer.includes(letter)) {
               li.classList.add("correct");
             } else {
               li.classList.add("incorrect");
             }
+          }
+
+          li.addEventListener("click", () => {
+            if (!answersState[questionNumber]) {
+              answersState[questionNumber] = [];
+            }
+            // 複数選択の場合、クリックするたびに状態を切り替える
+            const choiceIndex = answersState[questionNumber].indexOf(letter);
+            if (choiceIndex > -1) {
+                answersState[questionNumber].splice(choiceIndex, 1); // 既に選択済みなら解除
+                li.classList.remove("correct", "incorrect");
+            } else {
+                answersState[questionNumber].push(letter); // 未選択なら追加
+                if (q.answer.includes(letter)) {
+                    li.classList.add("correct");
+                } else {
+                    li.classList.add("incorrect");
+                }
+            }
           });
           choicesList.appendChild(li);
         });
 
-        // メモ欄の作成
+        // メモ欄
         const memoEl = document.createElement("div");
         memoEl.className = "memo";
         const textarea = document.createElement("textarea");
         textarea.placeholder = "メモを入力してください...";
         textarea.id = `memo_${questionNumber}`;
-        textarea.value = localStorage.getItem(textarea.id) || ""; // 復元
+        textarea.value = localStorage.getItem(textarea.id) || "";
         textarea.addEventListener("input", () => {
-          localStorage.setItem(textarea.id, textarea.value); // 自動保存
+          localStorage.setItem(textarea.id, textarea.value);
         });
         memoEl.appendChild(textarea);
 
-        // 出典元リンクの追加
+        // 見直しチェック
+        const reviewEl = document.createElement("div");
+        reviewEl.className = "review";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `review_${questionNumber}`;
+        checkbox.checked = !!reviewState[questionNumber];
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            reviewState[questionNumber] = true;
+            block.classList.add("review-flag");
+          } else {
+            delete reviewState[questionNumber];
+            block.classList.remove("review-flag");
+          }
+          localStorage.setItem("reviewState", JSON.stringify(reviewState));
+        });
+        const label = document.createElement("label");
+        label.setAttribute("for", checkbox.id);
+        label.textContent = " この問題を見直す";
+        reviewEl.appendChild(checkbox);
+        reviewEl.appendChild(label);
+
+        // 出典
         const sourceEl = document.createElement("div");
         sourceEl.className = "source";
         if (q.source) {
@@ -1609,17 +1728,172 @@
         block.appendChild(questionEl);
         block.appendChild(choicesList);
         block.appendChild(memoEl);
+        block.appendChild(reviewEl);
         block.appendChild(sourceEl);
 
         quizContainer.appendChild(block);
       });
+
+      // ボタン制御
+      prevBtn.disabled = (page === 0);
+      nextBtn.disabled = (end >= questions.length);
+      prevBtn.style.display = ''; // 表示
+      nextBtn.style.display = ''; // 表示
+    }
+
+    function renderReviewQuestions() {
+      currentMode = 'review';
+      updateModeButtons();
+
+      quizContainer.innerHTML = "";
+      const reviewQuestionNumbers = Object.keys(reviewState).filter(key => reviewState[key]).map(Number).sort((a, b) => a - b);
+
+      if (reviewQuestionNumbers.length === 0) {
+        quizContainer.innerHTML = "<p>見直し中の問題はありません。</p>";
+        // ボタン制御を無効化
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        prevBtn.style.display = 'none'; // 非表示
+        nextBtn.style.display = 'none'; // 非表示
+        return;
+      }
+
+      reviewQuestionNumbers.forEach(qNum => {
+        const qIndex = qNum - 1; // 配列のインデックスは0から始まるため
+        const q = questions[qIndex];
+
+        const block = document.createElement("div");
+        block.className = "question-block review-flag"; // 見直しフラグを常に適用
+
+        const questionEl = document.createElement("div");
+        questionEl.className = "question-text";
+        questionEl.textContent = `${qNum}. ${q.question}`;
+
+        const choicesList = document.createElement("ul");
+        choicesList.className = "choices";
+
+        Object.entries(q.choices).forEach(([key, value]) => {
+          const letter = key.replace('.', '');
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${key}</strong> ${value}`;
+          li.dataset.choice = letter;
+
+          // 回答復元（見直し問題でも回答状態を反映）
+          if (answersState[qNum]?.includes(letter)) {
+            if (q.answer.includes(letter)) {
+              li.classList.add("correct");
+            } else {
+              li.classList.add("incorrect");
+            }
+          }
+
+          // クリックイベントを追加し、回答できるようにする
+          li.addEventListener("click", () => {
+            if (!answersState[qNum]) {
+              answersState[qNum] = [];
+            }
+            const choiceIndex = answersState[qNum].indexOf(letter);
+            if (choiceIndex > -1) {
+                answersState[qNum].splice(choiceIndex, 1); // 既に選択済みなら解除
+                li.classList.remove("correct", "incorrect");
+            } else {
+                answersState[qNum].push(letter); // 未選択なら追加
+                if (q.answer.includes(letter)) {
+                    li.classList.add("correct");
+                } else {
+                    li.classList.add("incorrect");
+                }
+            }
+          });
+          choicesList.appendChild(li);
+        });
+
+        // メモ欄 (編集可能)
+        const memoEl = document.createElement("div");
+        memoEl.className = "memo";
+        const textarea = document.createElement("textarea");
+        textarea.placeholder = "メモを入力してください...";
+        textarea.id = `memo_${qNum}`;
+        textarea.value = localStorage.getItem(textarea.id) || "";
+        textarea.addEventListener("input", () => {
+          localStorage.setItem(textarea.id, textarea.value);
+        });
+        memoEl.appendChild(textarea);
+
+        // 見直しチェック (編集可能)
+        const reviewEl = document.createElement("div");
+        reviewEl.className = "review";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `review_${qNum}`; // IDをユニークにする
+        checkbox.checked = !!reviewState[qNum];
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            reviewState[qNum] = true;
+            block.classList.add("review-flag");
+          } else {
+            delete reviewState[qNum];
+            block.classList.remove("review-flag");
+          }
+          localStorage.setItem("reviewState", JSON.stringify(reviewState));
+          // 見直しフラグが外れたら、見直し問題リストから削除するために再レンダリング
+          if (currentMode === 'review') {
+              renderReviewQuestions();
+          }
+        });
+        const label = document.createElement("label");
+        label.setAttribute("for", checkbox.id);
+        label.textContent = " この問題を見直す";
+        reviewEl.appendChild(checkbox);
+        reviewEl.appendChild(label);
+
+        // 出典
+        const sourceEl = document.createElement("div");
+        sourceEl.className = "source";
+        if (q.source) {
+          sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
+        }
+
+        block.appendChild(questionEl);
+        block.appendChild(choicesList);
+        block.appendChild(memoEl);
+        block.appendChild(reviewEl);
+        block.appendChild(sourceEl);
+
+        quizContainer.appendChild(block);
+      });
+
+      // ボタン制御を無効化（見直しリスト内ではページングしないため）
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      prevBtn.style.display = 'none'; // 非表示
+      nextBtn.style.display = 'none'; // 非表示
     }
 
     nextBtn.addEventListener("click", () => {
-      currentPage++;
+      if (currentMode === 'all') { // 全問題モードの場合のみページング
+        currentPage++;
+        renderQuestions(currentPage);
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      if (currentMode === 'all' && currentPage > 0) { // 全問題モードの場合のみページング
+        currentPage--;
+        renderQuestions(currentPage);
+      }
+    });
+
+    showReviewBtn.addEventListener("click", () => {
+      renderReviewQuestions();
+    });
+
+    showAllBtn.addEventListener("click", () => {
+      currentPage = 0; // 全問題表示時は最初のページに戻る
       renderQuestions(currentPage);
     });
 
+    // 初期表示
     renderQuestions(currentPage);
   </script>
 </body>

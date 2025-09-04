@@ -4,71 +4,206 @@
   <meta charset="UTF-8">
   <title>VCP-VCF Administrator 2V0-11.25 2V0-11.24</title>
   <style>
+    /* --- CSS変数（デフォルトのライトモード用） --- */
+    :root {
+      --bg-color: #f4f4f4;
+      --container-bg-color: white;
+      --text-color: #333;
+      --question-block-border: #ccc;
+      --choice-bg-color: #f0f0f0;
+      --choice-hover-bg-color: #d0e8ff;
+      --memo-bg-color: white;
+      --memo-border-color: #ccc;
+      --review-flag-bg: #fff7cc; /* 黄色系 */
+      --selected-choice-correct: #c8f7c5;
+      --selected-choice-incorrect: #f7c5c5;
+      --primary-button-bg: #007BFF;
+      --primary-button-hover-bg: #0056b3;
+      --toggle-container-bg: #e0e0e0;
+      --toggle-label-color: #555;
+      --search-input-bg: white;
+      --search-input-border: #ccc;
+      --search-text-color: #333;
+
+      /* ダークモードトグルスイッチの色 */
+      --darkmode-toggle-bg-off: #ccc;
+      --darkmode-toggle-circle-off: white;
+      --darkmode-toggle-bg-on: #007BFF;
+      --darkmode-toggle-circle-on: white;
+    }
+
+    /* --- ダークモード用の変数 --- */
+    body.dark-mode {
+      --bg-color: #1e1e1e;
+      --container-bg-color: #252526;
+      --text-color: #d4d4d4;
+      --question-block-border: #444;
+      --choice-bg-color: #333333;
+      --choice-hover-bg-color: #4a4a4a;
+      --memo-bg-color: #3c3c3c;
+      --memo-border-color: #555;
+      --review-flag-bg: #4a4a2a; /* ダークモードに合わせた黄色系 */
+      --selected-choice-correct: #3a5e37; /* ダークモードに合わせた緑 */
+      --selected-choice-incorrect: #5e3737; /* ダークモードに合わせた赤 */
+      --primary-button-bg: #6a9acb; /* ダークモードに合わせた青 */
+      --primary-button-hover-bg: #4f79a3;
+      --toggle-container-bg: #3c3c3c;
+      --toggle-label-color: #d4d4d4;
+      --search-input-bg: #3c3c3c;
+      --search-input-border: #555;
+      --search-text-color: #d4d4d4;
+
+      /* ダークモードトグルスイッチの色 */
+      --darkmode-toggle-bg-off: #555;
+      --darkmode-toggle-circle-off: #eee;
+      --darkmode-toggle-bg-on: #6a9acb;
+      --darkmode-toggle-circle-on: white;
+    }
+
     body {
       font-family: "Helvetica", sans-serif;
-      background-color: #f4f4f4;
+      background-color: var(--bg-color);
       margin: 0;
       padding: 20px;
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .container {
       max-width: 800px;
       margin: auto;
-      background: white;
+      background: var(--container-bg-color);
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      position: relative; /* トグルスイッチを絶対配置するために必要 */
     }
 
     h1 {
       text-align: center;
-      color: #333;
+      color: var(--text-color);
+      margin-bottom: 25px;
     }
 
-    /* トグルスイッチのコンテナ */
+    /* ダークモードトグルスイッチのスタイル */
+    .dark-mode-toggle-wrapper {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column; /* 縦並びにする */
+      align-items: center; /* 中央揃えにする */
+      gap: 5px; /* テキストとスイッチの間のスペースを調整 */
+      font-size: 12px; /* 小さくする */
+      color: var(--text-color); /* テキストの色をテーマに合わせる */
+    }
+
+    .dark-mode-label {
+        font-weight: bold; /* テキストを太字にする */
+        margin-bottom: 3px; /* スイッチとの間隔を調整 */
+    }
+
+    .dark-mode-toggle {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      /* その他のスタイルは変更なし */
+    }
+
+    .dark-mode-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .dark-mode-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--darkmode-toggle-bg-off);
+      transition: .4s;
+      border-radius: 22px; /* heightの半分 */
+    }
+
+    .dark-mode-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px; /* 小さくする */
+      width: 18px; /* 小さくする */
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--darkmode-toggle-circle-off);
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .dark-mode-slider {
+      background-color: var(--darkmode-toggle-bg-on);
+    }
+
+    input:focus + .dark-mode-slider {
+      box-shadow: 0 0 1px var(--darkmode-toggle-bg-on);
+    }
+
+    input:checked + .dark-mode-slider:before {
+      transform: translateX(18px); /* width - height + left*2 (40 - 22 + 2*2 = 18) */
+      background-color: var(--darkmode-toggle-circle-on);
+    }
+
+    /* Rounded sliders */
+    .dark-mode-slider.round {
+      border-radius: 22px; /* heightの半分 */
+    }
+
+    .dark-mode-slider.round:before {
+      border-radius: 50%;
+    }
+
+
+    /* モード切り替え（全問題/見直し問題）のコンテナ */
     .mode-toggle-container {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
-      background-color: #e0e0e0;
+      background-color: var(--toggle-container-bg); /* 変更 */
       border-radius: 8px;
-      overflow: hidden; /* 角丸を適用 */
-      width: fit-content; /* 内容に合わせて幅を調整 */
-      margin-left: auto; /* 中央揃え */
-      margin-right: auto; /* 中央揃え */
-      box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* 内側の影 */
+      overflow: hidden;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
     }
 
-    /* ラジオボタンを非表示にする */
     .mode-toggle-container input[type="radio"] {
       display: none;
     }
 
-    /* ラベルをボタンのようにスタイリング */
     .mode-toggle-container label {
       padding: 10px 20px;
       font-size: 16px;
-      color: #555;
+      color: var(--toggle-label-color);
       cursor: pointer;
       transition: background-color 0.3s, color 0.3s;
-      flex-grow: 1; /* 親要素内で均等に幅を広げる */
-      text-align: center; /* テキスト中央揃え */
-      white-space: nowrap; /* テキストの折り返しを防ぐ */
-      position: relative; /* 疑似要素のために必要 */
+      flex-grow: 1;
+      text-align: center;
+      white-space: nowrap;
+      position: relative;
     }
 
-    /* 選択されたラベルのスタイル */
     .mode-toggle-container input[type="radio"]:checked + label {
-      background-color: #007BFF;
+      background-color: var(--primary-button-bg);
       color: white;
       font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* 選択されたボタンの影 */
-      z-index: 1; /* 選択されたラベルを前面に */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 1;
     }
 
-    /* ホバー時のスタイル */
     .mode-toggle-container label:hover:not(input[type="radio"]:checked + label) {
-      background-color: #d0e8ff;
+      background-color: var(--choice-hover-bg-color);
     }
 
     /* 選択されたラベルの左右の角を調整 (もし必要なら) */
@@ -81,20 +216,61 @@
         border-bottom-right-radius: 8px;
     }
 
+    /* 検索バーのスタイル */
+    .search-container {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-container input[type="text"] {
+      flex-grow: 0.7;
+      padding: 10px;
+      border: 1px solid var(--search-input-border);
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+      background-color: var(--search-input-bg);
+      color: var(--search-text-color);
+    }
+    .search-container input[type="text"]::placeholder {
+      color: var(--search-text-color);
+      opacity: 0.7;
+    }
+
+    .search-container button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: var(--primary-button-bg);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .search-container button:hover {
+      background-color: var(--primary-button-hover-bg);
+    }
 
     .question-block {
       margin-bottom: 30px;
       padding: 15px;
-      border-bottom: 1px solid #ccc;
+      border-bottom: 1px solid var(--question-block-border);
     }
 
     .review-flag {
-      background-color: #fff7cc; /* 黄色系 */
+      background-color: var(--review-flag-bg);
     }
 
     .question-text {
       font-weight: bold;
       margin-bottom: 10px;
+      color: var(--text-color);
     }
 
     .choices {
@@ -105,22 +281,22 @@
     .choices li {
       margin-bottom: 8px;
       padding: 10px;
-      background: #f0f0f0;
+      background: var(--choice-bg-color);
       border-radius: 5px;
       cursor: pointer;
       transition: background 0.3s;
     }
 
     .choices li:hover {
-      background: #d0e8ff;
+      background: var(--choice-hover-bg-color);
     }
 
     .correct {
-      background-color: #c8f7c5 !important;
+      background-color: var(--selected-choice-correct) !important;
     }
 
     .incorrect {
-      background-color: #f7c5c5 !important;
+      background-color: var(--selected-choice-incorrect) !important;
     }
 
     .source {
@@ -129,7 +305,7 @@
     }
 
     .source a {
-      color: #007BFF;
+      color: var(--primary-button-bg);
       text-decoration: none;
     }
 
@@ -144,16 +320,27 @@
     .memo textarea {
       width: 100%;
       height: 80px;
+      min-height: 50px;
       padding: 10px;
       border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--memo-border-color);
       font-size: 14px;
       resize: vertical;
+      box-sizing: border-box;
+      background-color: var(--memo-bg-color);
+      color: var(--text-color);
+    }
+    .memo textarea::placeholder {
+      color: var(--text-color);
+      opacity: 0.7;
     }
 
     .review {
       margin-top: 8px;
       font-size: 14px;
+    }
+    .review label {
+        color: var(--text-color);
     }
 
     .btn-container {
@@ -165,12 +352,12 @@
     button {
       padding: 10px 20px;
       font-size: 16px;
-      background-color: #007BFF;
+      background-color: var(--primary-button-bg);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 5 खींच;
       cursor: pointer;
-      margin-right: 10px; /* ボタン間に少しスペースを追加 */
+      margin-right: 10px;
     }
 
     button:last-child {
@@ -178,7 +365,7 @@
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: var(--primary-button-hover-bg);
     }
 
     button:disabled {
@@ -190,6 +377,16 @@
 <body>
   <div class="container">
     <h1>VCP-VCF Administrator 2V0-11.25, 2V0-11.24</h1>
+
+    <!-- ダークモード切り替えトグルスイッチの追加 -->
+    <div class="dark-mode-toggle-wrapper">
+      <span class="dark-mode-label">DARKMODE</span> <!-- ここにテキストを追加 -->
+      <label class="dark-mode-toggle">
+        <input type="checkbox" id="dark-mode-toggle-checkbox">
+        <span class="dark-mode-slider round"></span>
+      </label>
+    </div>
+
     <!-- トグルスイッチとして機能するモード切り替えのHTML -->
     <div class="mode-toggle-container">
       <input type="radio" id="mode-all" name="quiz-mode" value="all" checked>
@@ -197,6 +394,12 @@
 
       <input type="radio" id="mode-review" name="quiz-mode" value="review">
       <label for="mode-review">見直し問題</label>
+    </div>
+
+    <!-- 検索バーの追加 -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="キーワードで検索...">
+        <button id="clear-search-btn">クリア</button>
     </div>
 
     <div id="quiz-container"></div>
@@ -207,16 +410,37 @@
   </div>
 
   <script>
+    // --- Constants ---
     const QUESTIONS_PER_PAGE = 10;
+    const MODES = {
+      ALL: 'all',
+      REVIEW: 'review',
+      SEARCH: 'search'
+    };
+
+    // --- DOM Elements ---
+    const quizContainer = document.getElementById("quiz-container");
+    const nextBtn = document.getElementById("next-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const searchInput = document.getElementById("search-input");
+    const clearSearchBtn = document.getElementById("clear-search-btn");
+    const modeAllRadio = document.getElementById("mode-all");
+    const modeReviewRadio = document.getElementById("mode-review");
+
+    // ダークモードトグルスイッチの要素を追加
+    const darkModeToggleCheckbox = document.getElementById("dark-mode-toggle-checkbox");
+
+
+    // --- State Variables ---
     let currentPage = 0;
-    let currentMode = 'all'; // 'all' または 'review'
+    let currentMode = MODES.ALL;
+    let answersState = {}; // Answer state (resets on reload)
+    let reviewState = JSON.parse(localStorage.getItem("reviewState") || "{}"); // Review state (persists)
+    let filteredQuestions = []; // Stores search results
+    let isDarkMode = localStorage.getItem('darkMode') === 'true'; // ダークモードの状態をlocalStorageから読み込み
 
-    // 回答状態（リロードでリセット）
-    let answersState = {};
 
-    // 見直し状態（リロードしても保持）
-    let reviewState = JSON.parse(localStorage.getItem("reviewState") || "{}");
-
+    // --- Quiz Data ---
     const questions = [
       
   {
@@ -1645,300 +1869,317 @@
   }
     ];
 
-    const quizContainer = document.getElementById("quiz-container");
-    const nextBtn = document.getElementById("next-btn");
-    const prevBtn = document.getElementById("prev-btn");
+    // --- Helper Functions ---
 
-    // モード切り替えラジオボタン
-    const modeAllRadio = document.getElementById("mode-all");
-    const modeReviewRadio = document.getElementById("mode-review");
+    /**
+     * ダークモードの状態を適用または解除する
+     * @param {boolean} enable - trueでダークモードを有効、falseで無効
+     */
+    function applyDarkMode(enable) {
+      if (enable) {
+        document.body.classList.add("dark-mode");
+        darkModeToggleCheckbox.checked = true; // チェックボックスを選択状態に
+      } else {
+        document.body.classList.remove("dark-mode");
+        darkModeToggleCheckbox.checked = false; // チェックボックスを未選択状態に
+      }
+      localStorage.setItem('darkMode', enable); // 状態を保存
+      isDarkMode = enable; // isDarkMode変数も更新
+    }
 
-    function renderQuestions(page) {
-      currentMode = 'all';
-      // updateModeButtons() は不要になりました
 
+    /**
+     * Updates the answer state for a given question.
+     * @param {number} questionNumber - The 1-based index of the question.
+     * @param {string} chosenLetter - The letter of the chosen answer.
+     * @param {HTMLElement} listItem - The list item element of the choice.
+     * @param {Array<string>} correctAnswer - The correct answer(s) for the question.
+     */
+    function updateAnswerState(questionNumber, chosenLetter, listItem, correctAnswer) {
+      if (!answersState[questionNumber]) {
+        answersState[questionNumber] = [];
+      }
+      const choiceIndex = answersState[questionNumber].indexOf(chosenLetter);
+
+      if (choiceIndex > -1) {
+        // Already selected, unselect it
+        answersState[questionNumber].splice(choiceIndex, 1);
+        listItem.classList.remove("correct", "incorrect");
+      } else {
+        // Not selected, select it
+        answersState[questionNumber].push(chosenLetter);
+        if (correctAnswer.includes(chosenLetter)) {
+          listItem.classList.add("correct");
+        } else {
+          listItem.classList.add("incorrect");
+        }
+      }
+    }
+
+    /**
+     * Toggles the review state for a given question.
+     * @param {number} questionNumber - The 1-based index of the question.
+     * @param {HTMLInputElement} checkbox - The checkbox element.
+     * @param {HTMLElement} questionBlock - The entire question block element.
+     * @returns {boolean} The new review state.
+     */
+    function toggleReviewState(questionNumber, checkbox, questionBlock) {
+      if (checkbox.checked) {
+        reviewState[questionNumber] = true;
+        questionBlock.classList.add("review-flag");
+      } else {
+        delete reviewState[questionNumber];
+        questionBlock.classList.remove("review-flag");
+      }
+      localStorage.setItem("reviewState", JSON.stringify(reviewState));
+      return checkbox.checked;
+    }
+
+    /**
+     * Creates and returns a single question block element.
+     * @param {Object} q - The question object from the `questions` array.
+     * @param {number} questionNumber - The 1-based index of the question.
+     * @param {boolean} isReviewMode - True if currently in review mode.
+     * @returns {HTMLElement} The created question block.
+     */
+    function createQuestionBlock(q, questionNumber, isReviewMode) {
+      const block = document.createElement("div");
+      block.className = "question-block";
+
+      if (reviewState[questionNumber] || isReviewMode) {
+        block.classList.add("review-flag");
+      }
+
+      const questionEl = document.createElement("div");
+      questionEl.className = "question-text";
+      questionEl.textContent = `${questionNumber}. ${q.question}`;
+      block.appendChild(questionEl);
+
+      const choicesList = document.createElement("ul");
+      choicesList.className = "choices";
+      Object.entries(q.choices).forEach(([key, value]) => {
+        const letter = key.replace('.', '');
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${key}</strong> ${value}`;
+        li.dataset.choice = letter;
+
+        // Restore answer state
+        if (answersState[questionNumber]?.includes(letter)) {
+          if (q.answer.includes(letter)) {
+            li.classList.add("correct");
+          } else {
+            li.classList.add("incorrect");
+          }
+        }
+
+        li.addEventListener("click", () => {
+          updateAnswerState(questionNumber, letter, li, q.answer);
+        });
+        choicesList.appendChild(li);
+      });
+      block.appendChild(choicesList);
+
+      // Memo section
+      const memoEl = document.createElement("div");
+      memoEl.className = "memo";
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = "メモを入力してください...";
+      textarea.id = `memo_${questionNumber}`;
+      textarea.value = localStorage.getItem(textarea.id) || "";
+      textarea.addEventListener("input", () => {
+        localStorage.setItem(textarea.id, textarea.value);
+      });
+      memoEl.appendChild(textarea);
+      block.appendChild(memoEl);
+
+      // Review checkbox section
+      const reviewEl = document.createElement("div");
+      reviewEl.className = "review";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `review_${questionNumber}`;
+      checkbox.checked = !!reviewState[questionNumber];
+      checkbox.addEventListener("change", () => {
+        const newReviewState = toggleReviewState(questionNumber, checkbox, block);
+        if (currentMode === MODES.REVIEW && !newReviewState) {
+          // If a question is un-reviewed in review mode, re-render to remove it
+          renderReviewQuestions();
+        }
+      });
+      const label = document.createElement("label");
+      label.setAttribute("for", checkbox.id);
+      label.textContent = " この問題を見直す";
+      reviewEl.appendChild(checkbox);
+      reviewEl.appendChild(label);
+      block.appendChild(reviewEl);
+
+      // Source section
+      if (q.source) {
+        const sourceEl = document.createElement("div");
+        sourceEl.className = "source";
+        sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
+        block.appendChild(sourceEl);
+      }
+
+      return block;
+    }
+
+    /**
+     * Renders a page of questions.
+     * @param {number} page - The current page number (0-based).
+     * @param {Array<Object>} questionsToRender - The array of questions to display.
+     */
+    function renderQuestionsPage(page, questionsToRender, isReviewMode = false) {
       quizContainer.innerHTML = "";
       const start = page * QUESTIONS_PER_PAGE;
       const end = start + QUESTIONS_PER_PAGE;
-      const pageQuestions = questions.slice(start, end);
+      const pageQuestions = questionsToRender.slice(start, end);
 
-      if (pageQuestions.length === 0 && questions.length > 0) {
+      if (pageQuestions.length === 0 && questionsToRender.length > 0) {
         quizContainer.innerHTML = "<p>これで全ての問題が終了しました！</p>";
-      } else if (questions.length === 0) {
-        quizContainer.innerHTML = "<p>問題が定義されていません。</p>";
+      } else if (questionsToRender.length === 0) {
+        quizContainer.innerHTML = "<p>該当する問題は見つかりませんでした。</p>";
       }
 
-
-      pageQuestions.forEach((q, index) => {
-        const questionNumber = start + index + 1;
-        const block = document.createElement("div");
-        block.className = "question-block";
-
-        // 見直しフラグ適用
-        if (reviewState[questionNumber]) {
-          block.classList.add("review-flag");
-        }
-
-        const questionEl = document.createElement("div");
-        questionEl.className = "question-text";
-        questionEl.textContent = `${questionNumber}. ${q.question}`;
-
-        const choicesList = document.createElement("ul");
-        choicesList.className = "choices";
-
-        Object.entries(q.choices).forEach(([key, value]) => {
-          const letter = key.replace('.', '');
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${key}</strong> ${value}`;
-          li.dataset.choice = letter;
-
-          // 回答復元（ページ移動のみ）
-          if (answersState[questionNumber]?.includes(letter)) {
-            if (q.answer.includes(letter)) {
-              li.classList.add("correct");
-            } else {
-              li.classList.add("incorrect");
-            }
-          }
-
-          li.addEventListener("click", () => {
-            if (!answersState[questionNumber]) {
-              answersState[questionNumber] = [];
-            }
-            // 複数選択の場合、クリックするたびに状態を切り替える
-            const choiceIndex = answersState[questionNumber].indexOf(letter);
-            if (choiceIndex > -1) {
-                answersState[questionNumber].splice(choiceIndex, 1); // 既に選択済みなら解除
-                li.classList.remove("correct", "incorrect");
-            } else {
-                answersState[questionNumber].push(letter); // 未選択なら追加
-                if (q.answer.includes(letter)) {
-                    li.classList.add("correct");
-                } else {
-                    li.classList.add("incorrect");
-                }
-            }
-          });
-          choicesList.appendChild(li);
-        });
-
-        // メモ欄
-        const memoEl = document.createElement("div");
-        memoEl.className = "memo";
-        const textarea = document.createElement("textarea");
-        textarea.placeholder = "メモを入力してください...";
-        textarea.id = `memo_${questionNumber}`;
-        textarea.value = localStorage.getItem(textarea.id) || "";
-        textarea.addEventListener("input", () => {
-          localStorage.setItem(textarea.id, textarea.value);
-        });
-        memoEl.appendChild(textarea);
-
-        // 見直しチェック
-        const reviewEl = document.createElement("div");
-        reviewEl.className = "review";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `review_${questionNumber}`;
-        checkbox.checked = !!reviewState[questionNumber];
-        checkbox.addEventListener("change", () => {
-          if (checkbox.checked) {
-            reviewState[questionNumber] = true;
-            block.classList.add("review-flag");
-          } else {
-            delete reviewState[questionNumber];
-            block.classList.remove("review-flag");
-          }
-          localStorage.setItem("reviewState", JSON.stringify(reviewState));
-        });
-        const label = document.createElement("label");
-        label.setAttribute("for", checkbox.id);
-        label.textContent = " この問題を見直す";
-        reviewEl.appendChild(checkbox);
-        reviewEl.appendChild(label);
-
-        // 出典
-        const sourceEl = document.createElement("div");
-        sourceEl.className = "source";
-        if (q.source) {
-          sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
-        }
-
-        block.appendChild(questionEl);
-        block.appendChild(choicesList);
-        block.appendChild(memoEl);
-        block.appendChild(reviewEl);
-        block.appendChild(sourceEl);
-
-        quizContainer.appendChild(block);
+      pageQuestions.forEach(q => {
+        // Find the original index to ensure correct question numbering for state management
+        const originalIndex = questions.indexOf(q);
+        const questionNumber = originalIndex + 1;
+        const questionBlock = createQuestionBlock(q, questionNumber, isReviewMode);
+        quizContainer.appendChild(questionBlock);
       });
 
-      // ボタン制御
+      // Update pagination buttons
       prevBtn.disabled = (page === 0);
-      nextBtn.disabled = (end >= questions.length);
-      prevBtn.style.display = ''; // 表示
-      nextBtn.style.display = ''; // 表示
+      nextBtn.disabled = (end >= questionsToRender.length);
+      prevBtn.style.display = '';
+      nextBtn.style.display = '';
     }
 
+    /**
+     * Renders all reviewed questions.
+     */
     function renderReviewQuestions() {
-      currentMode = 'review';
-      // updateModeButtons() は不要になりました
+      currentMode = MODES.REVIEW;
+      searchInput.value = '';
+      filteredQuestions = [];
+
+      // Uncheck other mode radios
+      modeAllRadio.checked = false;
 
       quizContainer.innerHTML = "";
-      const reviewQuestionNumbers = Object.keys(reviewState).filter(key => reviewState[key]).map(Number).sort((a, b) => a - b);
+      const reviewQuestionNumbers = Object.keys(reviewState)
+        .filter(key => reviewState[key])
+        .map(Number)
+        .sort((a, b) => a - b);
 
       if (reviewQuestionNumbers.length === 0) {
         quizContainer.innerHTML = "<p>見直し中の問題はありません。</p>";
-        // ボタン制御を無効化
         prevBtn.disabled = true;
         nextBtn.disabled = true;
-        prevBtn.style.display = 'none'; // 非表示
-        nextBtn.style.display = 'none'; // 非表示
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
         return;
       }
 
       reviewQuestionNumbers.forEach(qNum => {
-        const qIndex = qNum - 1; // 配列のインデックスは0から始まるため
+        const qIndex = qNum - 1;
         const q = questions[qIndex];
-
-        const block = document.createElement("div");
-        block.className = "question-block review-flag"; // 見直しフラグを常に適用
-
-        const questionEl = document.createElement("div");
-        questionEl.className = "question-text";
-        questionEl.textContent = `${qNum}. ${q.question}`;
-
-        const choicesList = document.createElement("ul");
-        choicesList.className = "choices";
-
-        Object.entries(q.choices).forEach(([key, value]) => {
-          const letter = key.replace('.', '');
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${key}</strong> ${value}`;
-          li.dataset.choice = letter;
-
-          // 回答復元（見直し問題でも回答状態を反映）
-          if (answersState[qNum]?.includes(letter)) {
-            if (q.answer.includes(letter)) {
-              li.classList.add("correct");
-            } else {
-              li.classList.add("incorrect");
-            }
-          }
-
-          // クリックイベントを追加し、回答できるようにする
-          li.addEventListener("click", () => {
-            if (!answersState[qNum]) {
-              answersState[qNum] = [];
-            }
-            const choiceIndex = answersState[qNum].indexOf(letter);
-            if (choiceIndex > -1) {
-                answersState[qNum].splice(choiceIndex, 1); // 既に選択済みなら解除
-                li.classList.remove("correct", "incorrect");
-            } else {
-                answersState[qNum].push(letter); // 未選択なら追加
-                if (q.answer.includes(letter)) {
-                    li.classList.add("correct");
-                } else {
-                    li.classList.add("incorrect");
-                }
-            }
-          });
-          choicesList.appendChild(li);
-        });
-
-        // メモ欄 (編集可能)
-        const memoEl = document.createElement("div");
-        memoEl.className = "memo";
-        const textarea = document.createElement("textarea");
-        textarea.placeholder = "メモを入力してください...";
-        textarea.id = `memo_${qNum}`;
-        textarea.value = localStorage.getItem(textarea.id) || "";
-        textarea.addEventListener("input", () => {
-          localStorage.setItem(textarea.id, textarea.value);
-        });
-        memoEl.appendChild(textarea);
-
-        // 見直しチェック (編集可能)
-        const reviewEl = document.createElement("div");
-        reviewEl.className = "review";
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `review_${qNum}`; // IDをユニークにする
-        checkbox.checked = !!reviewState[qNum];
-        checkbox.addEventListener("change", () => {
-          if (checkbox.checked) {
-            reviewState[qNum] = true;
-            block.classList.add("review-flag");
-          } else {
-            delete reviewState[qNum];
-            block.classList.remove("review-flag");
-          }
-          localStorage.setItem("reviewState", JSON.stringify(reviewState));
-          // 見直しフラグが外れたら、見直し問題リストから削除するために再レンダリング
-          if (currentMode === 'review') {
-              renderReviewQuestions();
-          }
-        });
-        const label = document.createElement("label");
-        label.setAttribute("for", checkbox.id);
-        label.textContent = " この問題を見直す";
-        reviewEl.appendChild(checkbox);
-        reviewEl.appendChild(label);
-
-        // 出典
-        const sourceEl = document.createElement("div");
-        sourceEl.className = "source";
-        if (q.source) {
-          sourceEl.innerHTML = `出典: <a href="${q.source}" target="_blank">${q.source}</a>`;
-        }
-
-        block.appendChild(questionEl);
-        block.appendChild(choicesList);
-        block.appendChild(memoEl);
-        block.appendChild(reviewEl);
-        block.appendChild(sourceEl);
-
-        quizContainer.appendChild(block);
+        const questionBlock = createQuestionBlock(q, qNum, true); // Pass true for isReviewMode
+        quizContainer.appendChild(questionBlock);
       });
 
-      // ボタン制御を無効化（見直しリスト内ではページングしないため）
+      // Pagination not applicable for review mode, hide buttons
       prevBtn.disabled = true;
       nextBtn.disabled = true;
-      prevBtn.style.display = 'none'; // 非表示
-      nextBtn.style.display = 'none'; // 非表示
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
     }
 
+    /**
+     * Performs a search based on the input keyword.
+     */
+    function performSearch() {
+      const keyword = searchInput.value.toLowerCase().trim();
+      currentPage = 0;
+
+      if (keyword) {
+        currentMode = MODES.SEARCH;
+        filteredQuestions = questions.filter(q =>
+          q.question.toLowerCase().includes(keyword) ||
+          Object.values(q.choices).some(choice => choice.toLowerCase().includes(keyword))
+        );
+        renderQuestionsPage(currentPage, filteredQuestions);
+        modeAllRadio.checked = false;
+        modeReviewRadio.checked = false;
+      } else {
+        // If search input is empty, revert to 'all' mode
+        currentMode = MODES.ALL;
+        filteredQuestions = [];
+        renderQuestionsPage(currentPage, questions);
+        modeAllRadio.checked = true;
+      }
+    }
+
+    // --- Event Listeners ---
+
     nextBtn.addEventListener("click", () => {
-      if (currentMode === 'all') { // 全問題モードの場合のみページング
+      let questionsToPaginate = questions;
+      if (currentMode === MODES.SEARCH) {
+        questionsToPaginate = filteredQuestions;
+      }
+      // Only paginate if not in review mode
+      if (currentMode !== MODES.REVIEW && (currentPage * QUESTIONS_PER_PAGE + QUESTIONS_PER_PAGE < questionsToPaginate.length)) {
         currentPage++;
-        renderQuestions(currentPage);
+        renderQuestionsPage(currentPage, questionsToPaginate);
       }
     });
 
     prevBtn.addEventListener("click", () => {
-      if (currentMode === 'all' && currentPage > 0) { // 全問題モードの場合のみページング
+      if (currentMode !== MODES.REVIEW && currentPage > 0) {
         currentPage--;
-        renderQuestions(currentPage);
+        let questionsToPaginate = questions;
+        if (currentMode === MODES.SEARCH) {
+          questionsToPaginate = filteredQuestions;
+        }
+        renderQuestionsPage(currentPage, questionsToPaginate);
       }
     });
 
-    // ラジオボタンの変更イベントリスナー
     modeAllRadio.addEventListener("change", () => {
       if (modeAllRadio.checked) {
-        currentPage = 0; // 全問題表示時は最初のページに戻る
-        renderQuestions(currentPage);
+        searchInput.value = '';
+        currentMode = MODES.ALL;
+        currentPage = 0;
+        renderQuestionsPage(currentPage, questions);
       }
     });
 
     modeReviewRadio.addEventListener("change", () => {
       if (modeReviewRadio.checked) {
+        searchInput.value = '';
         renderReviewQuestions();
       }
     });
 
-    // 初期表示
-    renderQuestions(currentPage);
+    searchInput.addEventListener("input", performSearch);
+
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = '';
+      performSearch(); // Clears search and reverts to all questions
+    });
+
+    // ダークモードトグルスイッチのイベントリスナー
+    darkModeToggleCheckbox.addEventListener("change", (event) => {
+      applyDarkMode(event.target.checked);
+    });
+
+
+    // --- Initial Render ---
+    // アプリケーション起動時にダークモードの状態を適用
+    applyDarkMode(isDarkMode); // 初期状態を反映
+
+    renderQuestionsPage(currentPage, questions);
   </script>
 </body>
 </html>
